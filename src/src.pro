@@ -16,7 +16,10 @@ SOURCES += system.cpp \
     vec3.cpp \
     random.cpp \
     unitconverter.cpp \
-    settings.cpp
+    settings.cpp \
+    filemanager.cpp \
+    particlemover.cpp \
+    cpelapsedtimer.cpp
 HEADERS += system.h \
     cell.h \
     particles.h \
@@ -24,4 +27,7 @@ HEADERS += system.h \
     vec3.h \
     random.h \
     unitconverter.h \
-    settings.h
+    settings.h \
+    filemanager.h \
+    particlemover.h \
+    cpelapsedtimer.h

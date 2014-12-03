@@ -27,6 +27,20 @@ void Particles::findPosition(unsigned int particleIndex, vec3 systemSize)
     y[particleIndex] = Random::nextDouble() * systemSize.y();
 }
 
+void Particles::for_each(std::function<void (float, float, float, float)> action)
+{
+    for(unsigned int i=0; i<m_numberOfParticles; i++) {
+        action(x[i], y[i], vx[i], vy[i]);
+    }
+}
+
+void Particles::for_each(std::function<void (float, float)> action)
+{
+    for(unsigned int i=0; i<m_numberOfParticles; i++) {
+        action(x[i], y[i]);
+    }
+}
+
 Particles::Particles() :
     m_numberOfParticles(0)
 {
