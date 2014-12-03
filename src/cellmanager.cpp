@@ -2,7 +2,7 @@
 #include "settings.h"
 #include "system.h"
 #include "cpelapsedtimer.h"
-
+#include <cassert>
 #include <cmath>
 
 CellManager::CellManager() :
@@ -49,10 +49,12 @@ void CellManager::putAllParticlesInCells()
         const unsigned int cx = particles->x[i]*positionToCellIndexFactorX;
         const unsigned int cy = particles->y[i]*positionToCellIndexFactorY;
         const unsigned int cellIndex = index(cx,cy);
+#ifdef DSMC_DEBUG
         if(cellIndex < 0 || cellIndex >= m_cells.size()) {
             std::cout << "Particle " << i << " with position " << particles->x[i] << ", " << particles->y[i] << " got cell indices " << cx << " " << cy << " with cell index " << cellIndex << " which is out of bounds." << std::endl;
             exit(1);
         }
+#endif
 
         Cell &newCell = m_cells[cellIndex];
         newCell.addParticle(i, m_particleIndexMap);
@@ -80,7 +82,12 @@ void CellManager::updateParticleCells()
         const unsigned int cy = particles->y[i]*positionToCellIndexFactorY;
         const unsigned int newCellIndex = index(cx,cy);
         const unsigned int oldCellIndex = m_particleCellMap[i];
-
+#ifdef DSMC_DEBUG
+        if(newCellIndex < 0 || newCellIndex >= m_cells.size()) {
+            std::cout << "Particle " << i << " with position " << particles->x[i] << ", " << particles->y[i] << " got cell indices " << cx << " " << cy << " with cell index " << newCellIndex << " which is out of bounds." << std::endl;
+            exit(1);
+        }
+#endif
         if(newCellIndex != oldCellIndex) {
             Cell &oldCell = m_cells[oldCellIndex];
             Cell &newCell = m_cells[newCellIndex];

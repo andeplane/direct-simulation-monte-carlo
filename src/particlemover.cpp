@@ -41,6 +41,9 @@ void ParticleMover::applyPeriodicBoundaryConditions()
 
     const unsigned int numberOfParticles = particles->numberOfParticles();
     for(unsigned int i=0; i<numberOfParticles; i++) {
+        if(particles->x[i] < 0 && particles->x[i] > -1e-6) particles->x[i] = 0;
+        if(particles->y[i] < 0 && particles->y[i] > -1e-6) particles->y[i] = 0;
+
         if(particles->x[i] >= systemSize[0]) particles->x[i] -= systemSize[0];
         else if(particles->x[i] < 0) particles->x[i] += systemSize[0];
 

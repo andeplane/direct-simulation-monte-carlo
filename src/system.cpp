@@ -73,7 +73,7 @@ void System::createParticles()
     cout << "Creating " << numberOfParticles << " particles..." << endl;
     for(unsigned int i=0; i<numberOfParticles; i++) {
         m_particles.findPosition(i, m_size);
-        m_particles.maxwellianVelocity(i, m_settings->temperature, m_settings->mass);
+        m_particles.maxwellianVelocity(i, m_settings->temperature, m_settings->mass*m_settings->atomsPerParticle);
     }
 }
 

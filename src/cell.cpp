@@ -45,8 +45,10 @@ unsigned long Cell::collide(float dt, Particles *particles) {
     float *vy = &particles->vy[0];
 
     for(unsigned int collision=0; collision<numberOfCollisionCandidatesRounded; collision++) {
-        const unsigned int i = Random::nextDouble()*m_numberOfParticles;
-        const unsigned int j = (i + ( (unsigned int)(Random::nextDouble()* (m_numberOfParticles - 1) ))) % m_numberOfParticles;
+        const unsigned int localParticleIndex1 = Random::nextDouble()*m_numberOfParticles;
+        const unsigned int localParticleIndex2 = (localParticleIndex1 + ( (unsigned int)(Random::nextDouble()* (m_numberOfParticles - 1) ))) % m_numberOfParticles;
+        const unsigned int i = m_particleIndices[localParticleIndex1];
+        const unsigned int j = m_particleIndices[localParticleIndex2];
         const float dvx = vx[i] - vx[j];
         const float dvy = vy[i] - vy[j];
         const float relativeVelocity = sqrt(dvx*dvx + dvy*dvy);
@@ -56,7 +58,12 @@ unsigned long Cell::collide(float dt, Particles *particles) {
 
         if(relativeVelocity > Random::nextDouble()*m_maxRelativeVelocity) {
             m_numberOfCollisions++;
+            // std::cout << "Vels before: " << vx[i] << " " << vy[i] << " and " << vx[j] << " " << vy[j] << std::endl;
             collideParticles(vx[i], vy[i], vx[j], vy[j], relativeVelocity);
+//            std::cout << "Vels after: " << vx[i] << " " << vy[i] << " and " << vx[j] << " " << vy[j] << std::endl;
+//            if(m_numberOfCollisions > 10) {
+//                exit(1);
+//            }
         }
     }
 
