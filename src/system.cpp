@@ -2,8 +2,11 @@
 #include "random.h"
 #include "unitconverter.h"
 #include "cpelapsedtimer.h"
+#include <cmath>
 
 #include <cassert>
+#include <iostream>
+using std::cout; using std::endl;
 
 System::System() :
     m_isInitialized(false),
@@ -17,15 +20,20 @@ System::System() :
 void System::initialize(Settings &settings)
 {
     CPElapsedTimer::systemInitialize().start();
+    cout << "Initializing particle mover..." << endl;
     m_particleMover.initialize(this);
     m_settings = &settings;
     setSize(settings.systemSize);
 
     if(settings.loadState) {
+        cout << "Loading state..." << endl;
         loadState();
     } else {
         createParticles();
     }
+
+    cout << "Initializing cells..." << endl;
+    m_cellManager.initialize(this);
 
     m_isInitialized = true;
     CPElapsedTimer::systemInitialize().stop();
@@ -58,11 +66,11 @@ void System::loadState()
 
 void System::createParticles()
 {
-    unsigned int numberOfAtoms = m_settings->density * volume();
-    unsigned int numberOfParticles = numberOfAtoms / m_settings->atomsPerParticle;
+    unsigned int numberOfParticles = m_settings->numberOfParticles();
 
     m_particles.setNumberOfParticles(numberOfParticles);
 
+    cout << "Creating " << numberOfParticles << " particles..." << endl;
     for(unsigned int i=0; i<numberOfParticles; i++) {
         m_particles.findPosition(i, m_size);
         m_particles.maxwellianVelocity(i, m_settings->temperature, m_settings->mass);
@@ -84,6 +92,8 @@ void System::step(double dt)
     CPElapsedTimer::timeEvolution().start();
     assert(m_isInitialized && "System is not initialized.");
     m_particleMover.moveParticles(dt);
+    m_cellManager.updateParticleCells();
+    m_cellManager.collide(dt);
 
     m_totalTime += dt;
     m_numberOfTimesteps++;

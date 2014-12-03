@@ -21,4 +21,5 @@ public:
     void findPosition(unsigned int particleIndex, vec3 systemSize);
     void for_each(std::function<void(float x, float y, float vx, float vy)> action);
     void for_each(std::function<void(float x, float y)> action);
+    float velocitySquared(unsigned int particleIndex) { return vx[particleIndex]*vx[particleIndex] + vy[particleIndex]*vy[particleIndex]; }
 };

@@ -13,18 +13,20 @@ int main()
 
     System system;
     Settings settings;
-    settings.systemSize = vec3(0.5, 0.5, 0.5);
+    settings.systemSize = vec3(0.25, 0.25, 0.25);
 
     system.initialize(settings);
     float dt = 0.01;
     FileManager file;
-    Particles &particles = system.particles();
+    Particles *particles = system.particles();
 
     for(unsigned int timestep = 0; timestep < timesteps; timestep++) {
-        // cout << "Stepping timestep " << timestep << endl;
         system.step(dt);
+        if(timestep % 100 == 0) {
+            cout << timestep << endl;
+        }
 
-        // file.writeXyz(&particles);
+        file.writeXyz(particles);
     }
 
     CPElapsedTimer::printReport(&system);

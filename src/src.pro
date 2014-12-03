@@ -19,7 +19,8 @@ SOURCES += system.cpp \
     settings.cpp \
     filemanager.cpp \
     particlemover.cpp \
-    cpelapsedtimer.cpp
+    cpelapsedtimer.cpp \
+    cellmanager.cpp
 HEADERS += system.h \
     cell.h \
     particles.h \
@@ -30,4 +31,5 @@ HEADERS += system.h \
     settings.h \
     filemanager.h \
     particlemover.h \
-    cpelapsedtimer.h
+    cpelapsedtimer.h \
+    cellmanager.h

@@ -38,6 +38,8 @@ public:
     clock_t        m_startedAt;
     clock_t        m_lastPing;
     CPTimingObject m_moveParticles;
+    CPTimingObject m_updateCells;
+    CPTimingObject m_collideParticles;
     CPTimingObject m_periodicBoundaryConditions;
     CPTimingObject m_sampling;
     CPTimingObject m_disk;
@@ -46,6 +48,8 @@ public:
     void m_printReport(System *system);
 
     static CPTimingObject &moveParticles() { return CPElapsedTimer::getInstance().m_moveParticles; }
+    static CPTimingObject &updateCells() { return CPElapsedTimer::getInstance().m_updateCells; }
+    static CPTimingObject &collideParticles() { return CPElapsedTimer::getInstance().m_collideParticles; }
     static CPTimingObject &periodicBoundaryConditions() { return CPElapsedTimer::getInstance().m_periodicBoundaryConditions; }
     static CPTimingObject &sampling() { return CPElapsedTimer::getInstance().m_sampling; }
     static CPTimingObject &disk() { return CPElapsedTimer::getInstance().m_disk; }
