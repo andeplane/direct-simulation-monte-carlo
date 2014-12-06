@@ -101,5 +101,7 @@ void System::step(double dt)
     m_totalTime += dt;
     m_numberOfTimesteps++;
     m_random->refillRandomDoubles();
+    m_random->refillRandomFloats();
+    m_random->refillRandomUnsignedInts();
     CPElapsedTimer::timeEvolution().stop();
 }

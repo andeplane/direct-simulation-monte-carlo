@@ -11,7 +11,7 @@ private:
     float m_collisionRest;
     float m_collisionCoefficient;
     float m_volume;
-    float m_maxRelativeVelocity;
+    float m_maxRelativeVelocitySquared;
     void collideParticles(float &vxi, float &vyi, float &vxj, float &vyj, const float relativeVelocity, Random *random);
 public:
     Cell();

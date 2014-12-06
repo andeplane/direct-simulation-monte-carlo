@@ -40,7 +40,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <cassert>
-#define RNDSTOREDNUMBERS 100000
+#define RNDSTOREDNUMBERS 10000
 
 class Random {
 private:
