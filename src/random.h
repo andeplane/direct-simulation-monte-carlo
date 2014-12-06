@@ -1,35 +1,85 @@
-/*
- This is based on the ran1-generator from lib.cpp (see http://www.uio.no/studier/emner/matnat/fys/FYS3150/h14/index.html )
-     ** The function
-     **           ran1()
-     ** is an "Minimal" random number generator of Park and Miller
-     ** (see Numerical recipe page 280) with Bays-Durham shuffle and
-     ** added safeguards. Call with idum a negative integer to initialize;
-     ** thereafter, do not alter idum between sucessive deviates in a
-     ** sequence. RNMX should approximate the largest floating point value
-     ** that is less than 1.
-     ** The function returns a uniform deviate between 0.0 and 1.0
-     ** (exclusive of end-point values).
-*/
+// Should be compiled with Intel compiler and optimization flags
+// -xCORE-AVX-I -O3 -ipo
+// for example: icpc -xCORE-AVX-I -O3 -ipo -g -o main main.cpp random.cpp
+
+// BASED ON IVAN DIMKOVIC's CODE WITH LICENCE BELOW
+
+/*****************************************************************************
+
+    Super-Fast MWC1616 Pseudo-Random Number Generator
+    for Intel/AMD Processors (using SSE or SSE4 instruction set)
+    Copyright (c) 2012, Ivan Dimkovic
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+
+    Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+    OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+    LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*****************************************************************************/
 
 #pragma once
-
-#define IA 16807
-#define IM 2147483647
-#define AM (1.0/IM)
-#define IQ 127773
-#define IR 2836
-#define NTAB 32
-#define NDIV (1+(IM-1)/NTAB)
-#define EPS 1.2e-7
-#define RNMX (1.0-EPS)
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+#include <cassert>
+#define RNDSTOREDNUMBERS 100000
 
 class Random {
+private:
+    uint32_t a[4];
+    uint32_t b[4];
+    uint32_t mask[4];
+    uint32_t m1[4];
+    uint32_t m2[4];
+    uint32_t res[4]; // 4 UINTS are stored after a generateSSE4() call
+    float m_randomFloats[RNDSTOREDNUMBERS];
+    float m_randomDoubles[RNDSTOREDNUMBERS];
+    unsigned int m_randomUnsignedInts[RNDSTOREDNUMBERS];
+    unsigned int m_nextFloat;
+    unsigned int m_nextDouble;
+    unsigned int m_nextUnsignedInt;
+
+    void initFastRand(
+        uint16_t a1, uint16_t c1,
+        uint16_t b1, uint16_t d1,
+        uint16_t a2, uint16_t c2,
+        uint16_t b2, uint16_t d2,
+        uint16_t a3, uint16_t c3,
+        uint16_t b3, uint16_t d3,
+        uint16_t a4, uint16_t c4,
+        uint16_t b4, uint16_t d4);
+
+    void generateSSE4();
 public:
-    static long iy;
-    static long iv[NTAB];
-    static long seed;
-    static double nextDouble();
-    static double nextGaussian(double mean, double standardDeviation);
-    static void setSeed(long seed);
+    Random(std::vector<unsigned short> seed = {});
+    void refillRandomFloats();
+    void refillRandomDoubles();
+    void refillRandomUnsignedInts();
+    float nextFloat() { return m_randomFloats[m_nextFloat++]; }
+    double nextDouble() { return m_randomDoubles[m_nextDouble++]; }
+    double nextGaussian(const double mean, const double standardDeviation);
+    unsigned int nextUnsignedInt() { return m_randomUnsignedInts[m_nextUnsignedInt++]; }
+    unsigned int nextUnsignedInt(const unsigned int maxValue) { return (m_randomUnsignedInts[m_nextUnsignedInt++] % (maxValue+1)); }
+    bool nextBool() { return nextUnsignedInt(1); }
+    int indexOfNextDouble() { return m_nextDouble; }
+    int indexOfNextFloat() { return m_nextFloat; }
+    int indexOfNextUnsignedInt() { return m_nextUnsignedInt; }
 };

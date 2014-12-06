@@ -22,7 +22,7 @@ public:
     unsigned int index(unsigned int cx, unsigned int cy) { return cx + cy*m_numberOfCellsX; }
     void initialize(System *system);
     void updateParticleCells();
-    void collide(float dt);
+    void collide(float dt, Random *random);
     unsigned long numberOfCollisions() { return m_numberOfCollisions; }
 };
 

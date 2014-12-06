@@ -17,6 +17,7 @@ private:
     vec3 m_size;
     bool m_isInitialized;
     Settings *m_settings;
+    Random *m_random;
     unsigned int m_numberOfTimesteps;
     double       m_totalTime;
 

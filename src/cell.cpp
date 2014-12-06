@@ -20,11 +20,11 @@ void Cell::setVolume(float volume, unsigned int numberOfAtomsPerParticle, float 
     m_collisionCoefficient = numberOfAtomsPerParticle*atomDiameter / (2*volume);
 }
 
-void Cell::collideParticles(float &vxi, float &vyi, float &vxj, float &vyj, const float relativeVelocity) {
+void Cell::collideParticles(float &vxi, float &vyi, float &vxj, float &vyj, const float relativeVelocity, Random *random) {
     const float vcmx = 0.5*(vxi + vxj); // Center of mass velocity
     const float vcmy = 0.5*(vyi + vyj);
 
-    const float cosTheta = 1.0 - 2.0*Random::nextDouble();
+    const float cosTheta = 1.0 - 2.0*random->nextDouble();
     const float sinTheta = sqrt(1.0 - cosTheta*cosTheta);
 
     const float vrelx = relativeVelocity*sinTheta;
@@ -36,7 +36,7 @@ void Cell::collideParticles(float &vxi, float &vyi, float &vxj, float &vyj, cons
     vyj = vcmy - 0.5*vrely;
 }
 
-unsigned long Cell::collide(float dt, Particles *particles) {
+unsigned long Cell::collide(float dt, Particles *particles, Random *random) {
     // Compute how many collision candidates to perform
     float numberOfCollisionCandidates = m_collisionCoefficient*m_numberOfParticles*(m_numberOfParticles-1)*m_maxRelativeVelocity*dt + m_collisionRest;
     unsigned int numberOfCollisionCandidatesRounded = round(numberOfCollisionCandidates);
@@ -45,8 +45,8 @@ unsigned long Cell::collide(float dt, Particles *particles) {
     float *vy = &particles->vy[0];
 
     for(unsigned int collision=0; collision<numberOfCollisionCandidatesRounded; collision++) {
-        const unsigned int localParticleIndex1 = Random::nextDouble()*m_numberOfParticles;
-        const unsigned int localParticleIndex2 = (localParticleIndex1 + ( (unsigned int)(Random::nextDouble()* (m_numberOfParticles - 1) ))) % m_numberOfParticles;
+        const unsigned int localParticleIndex1 = random->nextDouble()*m_numberOfParticles;
+        const unsigned int localParticleIndex2 = (localParticleIndex1 + ( (unsigned int)(random->nextDouble()* (m_numberOfParticles - 1) ))) % m_numberOfParticles;
         const unsigned int i = m_particleIndices[localParticleIndex1];
         const unsigned int j = m_particleIndices[localParticleIndex2];
         const float dvx = vx[i] - vx[j];
@@ -56,9 +56,9 @@ unsigned long Cell::collide(float dt, Particles *particles) {
             m_maxRelativeVelocity = relativeVelocity;
         }
 
-        if(relativeVelocity > Random::nextDouble()*m_maxRelativeVelocity) {
+        if(relativeVelocity > random->nextDouble()*m_maxRelativeVelocity) {
             m_numberOfCollisions++;
-            collideParticles(vx[i], vy[i], vx[j], vy[j], relativeVelocity);
+            collideParticles(vx[i], vy[i], vx[j], vy[j], relativeVelocity, random);
         }
     }
 

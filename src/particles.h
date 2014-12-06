@@ -3,7 +3,7 @@
 #include "vec3.h"
 #include <functional>
 using std::function;
-
+class Random;
 class Particles
 {
 private:
@@ -17,8 +17,8 @@ public:
     Particles();
     unsigned int numberOfParticles() const;
     void setNumberOfParticles(unsigned int numberOfParticles);
-    void maxwellianVelocity(unsigned int particleIndex, float temperature, float mass);
-    void findPosition(unsigned int particleIndex, vec3 systemSize);
+    void maxwellianVelocity(unsigned int particleIndex, float temperature, float mass, Random *random);
+    void findPosition(unsigned int particleIndex, vec3 systemSize, Random *random);
     void for_each(std::function<void(float x, float y, float vx, float vy)> action);
     void for_each(std::function<void(float x, float y)> action);
     float velocitySquared(unsigned int particleIndex) { return vx[particleIndex]*vx[particleIndex] + vy[particleIndex]*vy[particleIndex]; }

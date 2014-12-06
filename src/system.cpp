@@ -20,6 +20,8 @@ System::System() :
 void System::initialize(Settings &settings)
 {
     CPElapsedTimer::systemInitialize().start();
+    m_random = new Random();
+
     cout << "Initializing particle mover..." << endl;
     m_particleMover.initialize(this);
     m_settings = &settings;
@@ -72,8 +74,9 @@ void System::createParticles()
 
     cout << "Creating " << numberOfParticles << " particles..." << endl;
     for(unsigned int i=0; i<numberOfParticles; i++) {
-        m_particles.findPosition(i, m_size);
-        m_particles.maxwellianVelocity(i, m_settings->temperature, m_settings->mass*m_settings->atomsPerParticle);
+        m_particles.findPosition(i, m_size, m_random);
+        m_particles.maxwellianVelocity(i, m_settings->temperature, m_settings->mass*m_settings->atomsPerParticle, m_random);
+        m_random->refillRandomDoubles();
     }
 }
 
@@ -93,9 +96,10 @@ void System::step(double dt)
     assert(m_isInitialized && "System is not initialized.");
     m_particleMover.moveParticles(dt);
     m_cellManager.updateParticleCells();
-    m_cellManager.collide(dt);
+    m_cellManager.collide(dt, m_random);
 
     m_totalTime += dt;
     m_numberOfTimesteps++;
+    m_random->refillRandomDoubles();
     CPElapsedTimer::timeEvolution().stop();
 }

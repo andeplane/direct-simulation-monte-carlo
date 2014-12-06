@@ -4,8 +4,8 @@ CONFIG   += console
 CONFIG   -= app_bundle
 CONFIG   -= qt
 CONFIG   += c++11
-QMAKE_CXXFLAGS += -std=c++11
-#DEFINES += DSMC_DEBUG
+QMAKE_CXXFLAGS += -std=c++11 -g
+DEFINES += DSMC_DEBUG
 
 TEMPLATE = lib
 

@@ -13,18 +13,18 @@ void Particles::setNumberOfParticles(unsigned int numberOfParticles)
     m_numberOfParticles = numberOfParticles;
 }
 
-void Particles::maxwellianVelocity(unsigned int particleIndex, float temperature, float mass)
+void Particles::maxwellianVelocity(unsigned int particleIndex, float temperature, float mass, Random *random)
 {
     float sqrtTemperatureOverMass = sqrt(temperature / mass);
 
-    vx[particleIndex] = Random::nextGaussian(0, sqrtTemperatureOverMass);
-    vy[particleIndex] = Random::nextGaussian(0, sqrtTemperatureOverMass);
+    vx[particleIndex] = random->nextGaussian(0, sqrtTemperatureOverMass);
+    vy[particleIndex] = random->nextGaussian(0, sqrtTemperatureOverMass);
 }
 
-void Particles::findPosition(unsigned int particleIndex, vec3 systemSize)
+void Particles::findPosition(unsigned int particleIndex, vec3 systemSize, Random *random)
 {
-    x[particleIndex] = Random::nextDouble() * systemSize.x();
-    y[particleIndex] = Random::nextDouble() * systemSize.y();
+    x[particleIndex] = random->nextDouble() * systemSize.x();
+    y[particleIndex] = random->nextDouble() * systemSize.y();
 }
 
 void Particles::for_each(std::function<void (float, float, float, float)> action)

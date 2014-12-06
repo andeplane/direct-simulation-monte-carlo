@@ -2,9 +2,9 @@
 #include "settings.h"
 #include "system.h"
 #include "cpelapsedtimer.h"
+#include "random.h"
 #include <cassert>
 #include <cmath>
-
 CellManager::CellManager() :
     m_numberOfCellsX(0),
     m_numberOfCellsY(0),
@@ -99,14 +99,15 @@ void CellManager::updateParticleCells()
     CPElapsedTimer::updateCells().stop();
 }
 
-void CellManager::collide(float dt)
+void CellManager::collide(float dt, Random *random)
 {
     CPElapsedTimer::collideParticles().start();
     m_numberOfCollisions = 0;
     const unsigned int numberOfCells = m_cells.size();
     for(unsigned int i=0; i<numberOfCells; i++) {
         Cell &cell = m_cells[i];
-        m_numberOfCollisions += cell.collide(dt, m_system->particles());
+        m_numberOfCollisions += cell.collide(dt, m_system->particles(), random);
+        random->refillRandomDoubles();
     }
     CPElapsedTimer::collideParticles().stop();
 }

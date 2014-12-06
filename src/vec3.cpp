@@ -150,23 +150,11 @@ void vec3::setToZero()
     set(0,0,0);
 }
 
-void vec3::randomUniform(float min, float max) {
-    m_vec[0] = min + Random::nextDouble()*(max - min);
-    m_vec[1] = min + Random::nextDouble()*(max - min);
-    m_vec[2] = min + Random::nextDouble()*(max - min);
-}
-
 void vec3::set(float x, float y, float z)
 {
     m_vec[0] = x;
     m_vec[1] = y;
     m_vec[2] = z;
-}
-
-void vec3::randomGaussian(float mean, float standardDeviation) {
-    m_vec[0] = Random::nextGaussian(mean, standardDeviation);
-    m_vec[1] = Random::nextGaussian(mean, standardDeviation);
-    m_vec[2] = Random::nextGaussian(mean, standardDeviation);
 }
 
 std::ostream& operator<<(std::ostream &stream, vec3 vec) {

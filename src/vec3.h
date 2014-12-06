@@ -42,8 +42,6 @@ public:
     float length();
     void normalize();
     void setToZero();
-    void randomGaussian(float mean, float standardDeviation);
-    void randomUniform(float min, float max);
     void set(float x, float y, float z);
     inline float x() const { return m_vec[0]; }
     inline float y() const { return m_vec[1]; }
