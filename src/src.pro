@@ -5,7 +5,7 @@ CONFIG   -= app_bundle
 CONFIG   -= qt
 CONFIG   += c++11
 QMAKE_CXXFLAGS += -std=c++11 -xCORE-AVX-I -O3 -ipo
-DEFINES += DSMC_DEBUG
+#DEFINES += DSMC_DEBUG
 
 TEMPLATE = lib
 
