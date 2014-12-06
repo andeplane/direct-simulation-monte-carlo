@@ -58,12 +58,7 @@ unsigned long Cell::collide(float dt, Particles *particles) {
 
         if(relativeVelocity > Random::nextDouble()*m_maxRelativeVelocity) {
             m_numberOfCollisions++;
-            // std::cout << "Vels before: " << vx[i] << " " << vy[i] << " and " << vx[j] << " " << vy[j] << std::endl;
             collideParticles(vx[i], vy[i], vx[j], vy[j], relativeVelocity);
-//            std::cout << "Vels after: " << vx[i] << " " << vy[i] << " and " << vx[j] << " " << vy[j] << std::endl;
-//            if(m_numberOfCollisions > 10) {
-//                exit(1);
-//            }
         }
     }
 
