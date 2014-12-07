@@ -27,15 +27,15 @@ void System::initialize(Settings &settings)
     m_settings = &settings;
     setSize(settings.systemSize);
 
+    cout << "Initializing cells..." << endl;
+    m_cellManager.initialize(this);
+
     if(settings.loadState) {
         cout << "Loading state..." << endl;
         loadState();
     } else {
         createParticles();
     }
-
-    cout << "Initializing cells..." << endl;
-    m_cellManager.initialize(this);
 
     m_isInitialized = true;
     CPElapsedTimer::systemInitialize().stop();
@@ -61,6 +61,15 @@ void System::setTotalTime(double totalTime)
 {
     m_totalTime = totalTime;
 }
+
+void System::for_each(std::function<void (float, float, float, float)> action)
+{
+    vector<Cell> *cells = m_cellManager.cells();
+    for(Cell &cell : *cells) {
+        cell.particles()->for_each(action);
+    }
+}
+
 void System::loadState()
 {
 
@@ -68,16 +77,18 @@ void System::loadState()
 
 void System::createParticles()
 {
-    unsigned int numberOfParticles = m_settings->numberOfParticles();
+    m_numberOfParticles = m_settings->numberOfParticles();
 
-    m_particles.setNumberOfParticles(numberOfParticles);
-
-    cout << "Creating " << numberOfParticles << " particles..." << endl;
-    for(unsigned int i=0; i<numberOfParticles; i++) {
-        m_particles.findPosition(i, m_size, m_random);
-        m_particles.maxwellianVelocity(i, m_settings->temperature, m_settings->mass*m_settings->atomsPerParticle, m_random);
+    cout << "Creating " << m_numberOfParticles << " particles..." << endl;
+    for(unsigned int i=0; i<m_numberOfParticles; i++) {
+        float x = m_random->nextFloat()*m_size[0];
+        float y = m_random->nextFloat()*m_size[1];
+        m_cellManager.addParticle(x,y, m_settings->temperature, m_settings->mass*m_settings->atomsPerParticle, m_random);
         m_random->refillRandomDoubles();
+        m_random->refillRandomFloats();
     }
+
+    m_cellManager.recomputeRelativeVelocities();
 }
 
 vec3 System::size() const

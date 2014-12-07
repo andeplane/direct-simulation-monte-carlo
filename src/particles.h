@@ -15,6 +15,8 @@ public:
     float vy[MAXNUMPARTICLES];
 
     Particles();
+    unsigned int addParticle(float x, float y, float vx, float vy);
+    void removeParticle(unsigned int particleIndex);
     unsigned int numberOfParticles() const;
     void setNumberOfParticles(unsigned int numberOfParticles);
     void maxwellianVelocity(unsigned int particleIndex, float temperature, float mass, Random *random);

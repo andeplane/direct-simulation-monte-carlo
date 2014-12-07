@@ -46,3 +46,25 @@ Particles::Particles() :
 {
 
 }
+
+unsigned int Particles::addParticle(float x_, float y_, float vx_, float vy_)
+{
+    x[m_numberOfParticles] = x_;
+    y[m_numberOfParticles] = y_;
+    vx[m_numberOfParticles] = vx_;
+    vy[m_numberOfParticles] = vy_;
+    m_numberOfParticles++;
+
+    return m_numberOfParticles-1; // Return the index of the added particle
+}
+
+void Particles::removeParticle(unsigned int particleIndex)
+{
+    unsigned int lastParticleIndex = m_numberOfParticles-1;
+
+    std::swap(x[particleIndex], x[lastParticleIndex]);
+    std::swap(y[particleIndex], y[lastParticleIndex]);
+    std::swap(vx[particleIndex], vx[lastParticleIndex]);
+    std::swap(vy[particleIndex], vy[lastParticleIndex]);
+    m_numberOfParticles--;
+}

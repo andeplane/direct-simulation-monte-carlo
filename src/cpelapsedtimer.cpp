@@ -28,7 +28,7 @@ void CPElapsedTimer::m_printReport(System *system)
     float collideParticlesFraction = m_collideParticles.elapsedTime() / totalTime;
 
     unsigned int numberOfTimesteps = system->numberOfTimesteps();
-    unsigned int numberOfParticles = system->particles()->numberOfParticles();
+    unsigned int numberOfParticles = system->numberOfParticles();
     unsigned long numberOfCollisions = system->cellManager()->numberOfCollisions();
 
     cout << endl << "Program finished after " << CPElapsedTimer::totalTime() << " seconds. Time analysis:" << endl;

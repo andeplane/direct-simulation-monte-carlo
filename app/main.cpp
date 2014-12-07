@@ -18,7 +18,6 @@ int main()
 
     system.initialize(settings);
     FileManager file;
-    Particles *particles = system.particles();
     StatisticsSampler sampler;
     float meanCollisionTime = sampler.meanCollisionTime(&system);
     cout << "Mean collision time: " << UC::timeToSI(meanCollisionTime)*1e9 << " ns." << endl;
@@ -27,7 +26,7 @@ int main()
         system.step(dt);
         if(timestep % 1000 == 0) {
             sampler.sample(&system);
-            cout << timestep << "   E/n=" << UC::energyToEv(sampler.kineticEnergy())/system.particles()->numberOfParticles() << " [eV]   T=" << UC::temperatureToSI(sampler.temperature()) << " [K]   Acceptance ratio: " << system.cellManager()->acceptanceRatio() << endl;
+            cout << timestep << "   E/n=" << UC::energyToEv(sampler.kineticEnergy())/system.numberOfParticles() << " [eV]   T=" << UC::temperatureToSI(sampler.temperature()) << " [K]   Acceptance ratio: " << system.cellManager()->acceptanceRatio() << endl;
         }
 
         // file.writeXyz(particles);

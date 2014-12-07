@@ -15,10 +15,9 @@ private:
     vector<Cell> m_cells;
     bool m_isInitialized;
     System *m_system;
-
-    void putAllParticlesInCells();
 public:
     CellManager();
+    void addParticle(float x, float y, float temperature, float mass, Random *random);
     unsigned int index(unsigned int cx, unsigned int cy) { return cx + cy*m_numberOfCellsX; }
     void initialize(System *system);
     void updateParticleCells();
@@ -26,5 +25,6 @@ public:
     void collide(float dt, Random *random);
     unsigned long numberOfCollisions() { return m_numberOfCollisions; }
     float acceptanceRatio();
+    vector<Cell> *cells() { return &m_cells; }
 };
 

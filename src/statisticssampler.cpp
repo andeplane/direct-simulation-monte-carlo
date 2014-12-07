@@ -22,28 +22,26 @@ float StatisticsSampler::meanCollisionTime(System *system)
 
 float StatisticsSampler::averageVelocity(System *system)
 {
-    Particles *particles = system->particles();
     double averageVelocity = 0;
-    for(unsigned int i=0; i<particles->numberOfParticles(); i++) {
-        averageVelocity += sqrt(particles->velocitySquared(i));
-    }
+    system->for_each([&](float x, float y, float vx, float vy) {
+        averageVelocity += sqrt(vx*vx + vy*vy);
+    });
 
-    averageVelocity /= particles->numberOfParticles();
+    averageVelocity /= system->numberOfParticles();
     return averageVelocity;
 }
 
 void StatisticsSampler::sampleKineticEnergy(System *system)
 {
     m_kineticEnergy = 0;
-    Particles *particles = system->particles();
     float constant = 0.5*system->settings()->mass*system->settings()->atomsPerParticle;
 
-    for(unsigned int i=0; i<particles->numberOfParticles(); i++) {
-        m_kineticEnergy += constant*particles->velocitySquared(i);
-    }
+    system->for_each([&](float x, float y, float vx, float vy) {
+        m_kineticEnergy += constant*(vx*vx + vy*vy);
+    });
 }
 
 void StatisticsSampler::sampleTemperature(System *system)
 {
-    m_temperature = 2.0/(3*system->particles()->numberOfParticles())*m_kineticEnergy;
+    m_temperature = 2.0/(3*system->numberOfParticles())*m_kineticEnergy;
 }

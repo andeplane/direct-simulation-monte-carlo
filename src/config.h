@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef MAXNUMPARTICLES
-#define MAXNUMPARTICLES 100000
+#define MAXNUMPARTICLES 100
 #endif
 
 #ifndef MAXNUMPARTICLESPERCELL
