@@ -13,6 +13,7 @@ private:
     unsigned int m_numberOfCellsY;
     unsigned long m_numberOfCollisions;
     vector<Cell> m_cells;
+    vector<unsigned int> m_cellIndices;
     bool m_isInitialized;
     System *m_system;
 

@@ -27,10 +27,20 @@ void CellManager::initialize(System *system)
     numberOfCells = m_numberOfCellsX*m_numberOfCellsY;
 
     m_cells.resize(numberOfCells);
+    m_cellIndices.resize( (m_numberOfCellsX+1)*(m_numberOfCellsY+1));
+
     std::cout << "Setting volumes on all " << numberOfCells << " cells..." << std::endl;
     for(Cell &cell : m_cells) {
         cell.setVolume(volumePerCell, settings->atomsPerParticle, settings->atomDiameter);
     }
+    for(unsigned int i=0; i<numberOfCells; i++) {
+        m_cellIndices[i] = i;
+    }
+
+    m_cellIndices[index(m_numberOfCellsX,0)] = index(m_numberOfCellsX-1,0);
+    m_cellIndices[index(m_numberOfCellsX,m_numberOfCellsY)] = index(m_numberOfCellsX-1,m_numberOfCellsY-1);
+    m_cellIndices[index(0,m_numberOfCellsY)] = index(0,m_numberOfCellsY-1);
+
     std::cout << "Putting all particles in cells..." << std::endl;
     putAllParticlesInCells();
     m_isInitialized = true;
@@ -48,7 +58,7 @@ void CellManager::putAllParticlesInCells()
     for(unsigned int i=0; i<numberOfParticles; i++) {
         const unsigned int cx = particles->x[i]*positionToCellIndexFactorX;
         const unsigned int cy = particles->y[i]*positionToCellIndexFactorY;
-        const unsigned int cellIndex = index(cx,cy);
+        const unsigned int cellIndex = m_cellIndices[index(cx,cy)];
 #ifdef DSMC_DEBUG
         if(cellIndex < 0 || cellIndex >= m_cells.size()) {
             std::cout << "Particle " << i << " with position " << particles->x[i] << ", " << particles->y[i] << " got cell indices " << cx << " " << cy << " with cell index " << cellIndex << " which is out of bounds." << std::endl;
@@ -80,7 +90,7 @@ void CellManager::updateParticleCells()
     for(unsigned int i=0; i<numberOfParticles; i++) {
         const unsigned int cx = particles->x[i]*positionToCellIndexFactorX;
         const unsigned int cy = particles->y[i]*positionToCellIndexFactorY;
-        const unsigned int newCellIndex = index(cx,cy);
+        const unsigned int newCellIndex = m_cellIndices[index(cx,cy)];;
         const unsigned int oldCellIndex = m_particleCellMap[i];
 #ifdef DSMC_DEBUG
         if(newCellIndex < 0 || newCellIndex >= m_cells.size()) {
