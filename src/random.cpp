@@ -182,3 +182,29 @@ void Random::generateSSE4() {
     __m128i newRes = _mm_add_epi32(ashiftnew, bmasknew);
     _mm_store_si128((__m128i *)res, newRes);
 }
+
+void Random::generateSSE4(unsigned int *result) {
+    __m128i a_ = _mm_load_si128((const __m128i *)a);
+    __m128i b_ = _mm_load_si128((const __m128i *)b);
+
+    const __m128i mask_ = _mm_load_si128((const __m128i *)mask);
+    const __m128i m1_ = _mm_load_si128((const __m128i *)m1);
+    const __m128i m2_ = _mm_load_si128((const __m128i *)m2);
+
+    __m128i amask = _mm_and_si128(a_, mask_);
+    __m128i ashift = _mm_srli_epi32(a_, 0x10);
+    __m128i amul = _mm_mullo_epi32(amask, m1_);
+    __m128i anew = _mm_add_epi32(amul, ashift);
+    _mm_store_si128((__m128i *)a, anew);
+
+    __m128i bmask = _mm_and_si128(b_, mask_);
+    __m128i bshift = _mm_srli_epi32(b_, 0x10);
+    __m128i bmul = _mm_mullo_epi32(bmask, m2_);
+    __m128i bnew = _mm_add_epi32(bmul, bshift);
+    _mm_store_si128((__m128i *)b, bnew);
+
+    __m128i bmasknew = _mm_and_si128(bnew, mask_);
+    __m128i ashiftnew = _mm_slli_epi32(anew, 0x10);
+    __m128i newRes = _mm_add_epi32(ashiftnew, bmasknew);
+    _mm_store_si128((__m128i *)result, newRes);
+}

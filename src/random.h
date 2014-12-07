@@ -69,6 +69,7 @@ private:
 
     void generateSSE4();
 public:
+    const double normalizationFactor = 1.0/4294967295.0; // UINTMAX
     Random(std::vector<unsigned short> seed = {});
     void refillRandomFloats();
     void refillRandomDoubles();
@@ -82,4 +83,5 @@ public:
     int indexOfNextDouble() { return m_nextDouble; }
     int indexOfNextFloat() { return m_nextFloat; }
     int indexOfNextUnsignedInt() { return m_nextUnsignedInt; }
+    void generateSSE4(unsigned int *result);
 };

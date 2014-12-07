@@ -25,9 +25,9 @@ int main()
     float dt = meanCollisionTime * 0.2;
     for(unsigned int timestep = 0; timestep < timesteps; timestep++) {
         system.step(dt);
-        if(timestep % 100 == 0) {
+        if(timestep % 1000 == 0) {
             sampler.sample(&system);
-            cout << timestep << "   E/n=" << UC::energyToEv(sampler.kineticEnergy())/system.particles()->numberOfParticles() << " [eV]   T=" << UC::temperatureToSI(sampler.temperature()) << " [K] " << endl;
+            cout << timestep << "   E/n=" << UC::energyToEv(sampler.kineticEnergy())/system.particles()->numberOfParticles() << " [eV]   T=" << UC::temperatureToSI(sampler.temperature()) << " [K]   Acceptance ratio: " << system.cellManager()->acceptanceRatio() << endl;
         }
 
         // file.writeXyz(particles);

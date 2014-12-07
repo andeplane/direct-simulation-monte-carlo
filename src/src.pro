@@ -4,9 +4,11 @@ CONFIG   += console
 CONFIG   -= app_bundle
 CONFIG   -= qt
 CONFIG   += c++11
-QMAKE_CXXFLAGS += -std=c++11 -xCORE-AVX-I -O3 -ipo
+QMAKE_CXXFLAGS += -std=c++11 -xCORE-AVX-I -O3 -ipo -g
+
 #DEFINES += DSMC_DEBUG
 
+CONFIG += staticlib
 TEMPLATE = lib
 
 TARGET = dsmc

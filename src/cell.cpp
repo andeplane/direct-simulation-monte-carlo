@@ -3,9 +3,11 @@
 #include "random.h"
 #include <cmath>
 #include <algorithm>
+#include <cassert>
 
 Cell::Cell() :
     m_numberOfParticles(0),
+    m_numberOfCollisionTrials(0),
     m_numberOfCollisions(0),
     m_collisionRest(0),
     m_collisionCoefficient(0),
@@ -20,53 +22,56 @@ void Cell::setVolume(float volume, unsigned int numberOfAtomsPerParticle, float 
     m_collisionCoefficient = numberOfAtomsPerParticle*atomDiameter / (2*volume);
 }
 
-void Cell::collideParticles(float &vxi, float &vyi, float &vxj, float &vyj, const float relativeVelocity, Random *random) {
-    const float vcmx = 0.5*(vxi + vxj); // Center of mass velocity
-    const float vcmy = 0.5*(vyi + vyj);
+void Cell::collideParticles(float &vxi, float &vyi, float &vxj, float &vyj, const float relativeVelocityHalf, const float randomNumber) {
+    const float vcmx = 0.5f*(vxi + vxj); // Center of mass velocity
+    const float vcmy = 0.5f*(vyi + vyj);
 
-    const float cosTheta = 1.0 - 2.0*random->nextFloat();
-    const float sinTheta = sqrt(1.0 - cosTheta*cosTheta);
+    const float cosTheta = 1.0f - 2.0f*randomNumber;
+    const float sinTheta = sqrt(1.0f - cosTheta*cosTheta);
 
-    const float vrelx = relativeVelocity*sinTheta;
-    const float vrely = relativeVelocity*cosTheta;
+    const float vrelxHalf = relativeVelocityHalf*sinTheta;
+    const float vrelyHalf = relativeVelocityHalf*cosTheta;
 
-    vxi = vcmx + 0.5*vrelx;
-    vyi = vcmy + 0.5*vrely;
-    vxj = vcmx - 0.5*vrelx;
-    vyj = vcmy - 0.5*vrely;
+    vxi = vcmx + vrelxHalf;
+    vyi = vcmy + vrelyHalf;
+    vxj = vcmx - vrelxHalf;
+    vyj = vcmy - vrelyHalf;
 }
 
 unsigned long Cell::collide(float dt, Particles *particles, Random *random) {
     // Compute how many collision candidates to perform
-    float numberOfCollisionCandidates = m_collisionCoefficient*m_numberOfParticles*(m_numberOfParticles-1)*sqrt(m_maxRelativeVelocitySquared)*dt + m_collisionRest;
-    unsigned int numberOfCollisionCandidatesRounded = round(numberOfCollisionCandidates);
-    m_collisionRest = numberOfCollisionCandidates - numberOfCollisionCandidatesRounded;
+    float numberOfCollisionTrials = m_collisionCoefficient*m_numberOfParticles*(m_numberOfParticles-1)*sqrt(m_maxRelativeVelocitySquared)*dt + m_collisionRest;
+    unsigned int numberOfCollisionTrialsRounded = round(numberOfCollisionTrials);
+    m_collisionRest = numberOfCollisionTrials - numberOfCollisionTrialsRounded;
     float *vx = &particles->vx[0];
     float *vy = &particles->vy[0];
-    float maxRelativeVelocitySquared = m_maxRelativeVelocitySquared;
-    for(unsigned int collision=0; collision<numberOfCollisionCandidatesRounded; collision++) {
-        const unsigned int localParticleIndex1 = random->nextFloat()*m_numberOfParticles;
-        const unsigned int localParticleIndex2 = (localParticleIndex1 + ( (unsigned int)(random->nextFloat()* (m_numberOfParticles - 1) ))) % m_numberOfParticles;
-        // const unsigned int localParticleIndex1 = random->nextUnsignedInt(m_numberOfParticles-1);
-        // const unsigned int localParticleIndex2 = (localParticleIndex1 + ( (unsigned int)(random->nextUnsignedInt(m_numberOfParticles - 2)))) % m_numberOfParticles;
+    m_numberOfCollisionTrials += numberOfCollisionTrialsRounded;
+
+    for(unsigned int collision=0; collision<numberOfCollisionTrialsRounded; collision++) {
+        // Use the generateSSE4 function to generate the 4 random numbers we need in this collision. They are all unsigned ints, so we need to normalize with random->normalizationFactor.
+        unsigned int rands[4];
+        random->generateSSE4(rands);
+        const unsigned int localParticleIndex1 = rands[0]*random->normalizationFactor*m_numberOfParticles;
+        const unsigned int localParticleIndex2 = (localParticleIndex1 + ( (unsigned int)(rands[1]*random->normalizationFactor* (m_numberOfParticles - 1) ))) % m_numberOfParticles;
+
         const unsigned int i = m_particleIndices[localParticleIndex1];
         const unsigned int j = m_particleIndices[localParticleIndex2];
         const float dvx = vx[i] - vx[j];
         const float dvy = vy[i] - vy[j];
         const float relativeVelocitySquared = dvx*dvx + dvy*dvy;
-        if(relativeVelocitySquared > maxRelativeVelocitySquared) {
-            maxRelativeVelocitySquared = relativeVelocitySquared;
+
+        if(relativeVelocitySquared > m_maxRelativeVelocitySquared) {
+            m_maxRelativeVelocitySquared = relativeVelocitySquared;
         }
 
-        float rnd = random->nextFloat();
-        if(relativeVelocitySquared > rnd*rnd*maxRelativeVelocitySquared) {
-            const float relativeVelocity = sqrt(relativeVelocitySquared);
+        float randomNumber = rands[2]*random->normalizationFactor;
+
+        if(relativeVelocitySquared > randomNumber*randomNumber*m_maxRelativeVelocitySquared) {
+            const float relativeVelocityHalf = 0.5*sqrt(relativeVelocitySquared);
             m_numberOfCollisions++;
-            collideParticles(vx[i], vy[i], vx[j], vy[j], relativeVelocity, random);
+            collideParticles(vx[i], vy[i], vx[j], vy[j], relativeVelocityHalf, rands[3]*random->normalizationFactor);
         }
     }
-
-    m_maxRelativeVelocitySquared = maxRelativeVelocitySquared;
 
     return m_numberOfCollisions;
 }
@@ -76,6 +81,9 @@ void Cell::addParticle(unsigned int particleIndex, unsigned int *particleIndexMa
     m_particleIndices[m_numberOfParticles] = particleIndex;
     particleIndexMap[particleIndex] = m_numberOfParticles;
     m_numberOfParticles++;
+#ifdef DSMC_DEBUG
+    assert(m_numberOfParticles <= MAXNUMPARTICLESPERCELL && "Too many particles in a cell.");
+#endif
 }
 
 void Cell::removeParticle(unsigned int particleIndex, unsigned int *particleIndexMap)

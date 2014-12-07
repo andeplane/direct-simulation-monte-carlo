@@ -99,6 +99,14 @@ void CellManager::updateParticleCells()
     CPElapsedTimer::updateCells().stop();
 }
 
+void CellManager::recomputeRelativeVelocities()
+{
+    Particles *particles = m_system->particles();
+    for(Cell &cell : m_cells) {
+        cell.updateMaxRelativeVelocity(particles);
+    }
+}
+
 void CellManager::collide(float dt, Random *random)
 {
     CPElapsedTimer::collideParticles().start();
@@ -107,8 +115,15 @@ void CellManager::collide(float dt, Random *random)
     for(unsigned int i=0; i<numberOfCells; i++) {
         Cell &cell = m_cells[i];
         m_numberOfCollisions += cell.collide(dt, m_system->particles(), random);
-        random->refillRandomFloats();
-        random->refillRandomUnsignedInts();
     }
     CPElapsedTimer::collideParticles().stop();
+}
+
+float CellManager::acceptanceRatio() {
+    unsigned int totalCollisionTrials = 0;
+    for(Cell &cell : m_cells) {
+        totalCollisionTrials += cell.numberOfCollisionTrials();
+    }
+
+    return (double)m_numberOfCollisions / totalCollisionTrials;
 }
