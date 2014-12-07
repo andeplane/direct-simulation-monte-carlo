@@ -108,6 +108,7 @@ void CellManager::collide(float dt, Random *random)
         Cell &cell = m_cells[i];
         m_numberOfCollisions += cell.collide(dt, m_system->particles(), random);
         random->refillRandomFloats();
+        random->refillRandomUnsignedInts();
     }
     CPElapsedTimer::collideParticles().stop();
 }

@@ -10,7 +10,7 @@ using namespace std;
 
 int main()
 {
-    unsigned int timesteps = 1000;
+    unsigned int timesteps = 10000;
 
     System system;
     Settings settings;
