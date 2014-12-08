@@ -5,6 +5,8 @@
 #include "settings.h"
 #include "particlemover.h"
 #include "cellmanager.h"
+#include "grid.h"
+
 #include <vector>
 using std::vector;
 
@@ -12,6 +14,7 @@ class System
 {
 private:
     Particles *m_particles;
+    Grid       m_grid;
     CellManager m_cellManager;
     ParticleMover m_particleMover;
     vec2 m_size;
@@ -38,6 +41,7 @@ public:
     void setTotalTime(double totalTime);
     Particles *particles() { return m_particles; }
     CellManager *cellManager() { return &m_cellManager; }
+    Grid *grid() { return &m_grid; }
 };
 
 #endif // SYSTEM_H

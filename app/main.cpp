@@ -35,7 +35,7 @@ int main(int args, char *argv[])
         settings.atomsPerParticle = atomsPerParticle;
         settings.recomputeMaxRelativeVelocityEvery = recomputeMaxRelativeVelocityEvery;
     }
-
+    system.grid()->createBox();
     system.initialize(settings);
     FileManager file;
     Particles *particles = system.particles();
