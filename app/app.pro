@@ -10,5 +10,5 @@ TEMPLATE = app
 
 SOURCES += main.cpp
 
-#LIBS += -L../src -ldsmc
-LIBS += ../src/libdsmc.a
+LIBS += -L../src -ldsmc
+#LIBS += ../src/libdsmc.a

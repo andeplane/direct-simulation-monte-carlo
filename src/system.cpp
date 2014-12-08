@@ -23,6 +23,7 @@ void System::initialize(Settings &settings)
     m_random = new Random();
 
     cout << "Initializing particle mover..." << endl;
+    m_particles = new Particles();
     m_particleMover.initialize(this);
     m_settings = &settings;
     setSize(settings.systemSize);
@@ -70,22 +71,22 @@ void System::createParticles()
 {
     unsigned int numberOfParticles = m_settings->numberOfParticles();
 
-    m_particles.setNumberOfParticles(numberOfParticles);
+    m_particles->setNumberOfParticles(numberOfParticles);
 
     cout << "Creating " << numberOfParticles << " particles..." << endl;
     for(unsigned int i=0; i<numberOfParticles; i++) {
-        m_particles.findPosition(i, m_size, m_random);
-        m_particles.maxwellianVelocity(i, m_settings->temperature, m_settings->mass*m_settings->atomsPerParticle, m_random);
+        m_particles->findPosition(i, m_size, m_random);
+        m_particles->maxwellianVelocity(i, m_settings->temperature, m_settings->mass*m_settings->atomsPerParticle, m_random);
         m_random->refillRandomDoubles();
     }
 }
 
-vec3 System::size() const
+vec2 System::size() const
 {
     return m_size;
 }
 
-void System::setSize(const vec3 &size)
+void System::setSize(const vec2 &size)
 {
     m_size = size;
 }
@@ -98,10 +99,14 @@ void System::step(double dt)
     m_cellManager.updateParticleCells();
     m_cellManager.collide(dt, m_random);
 
-    m_totalTime += dt;
-    m_numberOfTimesteps++;
     m_random->refillRandomDoubles();
     m_random->refillRandomFloats();
     m_random->refillRandomUnsignedInts();
+
+    m_totalTime += dt;
+    m_numberOfTimesteps++;
+    if(m_numberOfTimesteps % m_settings->recomputeMaxRelativeVelocityEvery == 0) {
+        m_cellManager.recomputeMaxRelativeVelocities();
+    }
     CPElapsedTimer::timeEvolution().stop();
 }

@@ -1,8 +1,9 @@
 #include "settings.h"
 
 Settings::Settings() :
-    systemSize(vec3(1,1,0)),
+    systemSize(vec2(1,1)),
     loadState(false),
+    recomputeMaxRelativeVelocityEvery(100),
     atomsPerParticle(10),
     particlesPerCell(10),
     density(1e6),

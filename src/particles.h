@@ -1,6 +1,6 @@
 #pragma once
 #include "config.h"
-#include "vec3.h"
+#include "vec2.h"
 #include <functional>
 using std::function;
 class Random;
@@ -18,7 +18,7 @@ public:
     unsigned int numberOfParticles() const;
     void setNumberOfParticles(unsigned int numberOfParticles);
     void maxwellianVelocity(unsigned int particleIndex, float temperature, float mass, Random *random);
-    void findPosition(unsigned int particleIndex, vec3 systemSize, Random *random);
+    void findPosition(unsigned int particleIndex, vec2 systemSize, Random *random);
     void for_each(std::function<void(float x, float y, float vx, float vy)> action);
     void for_each(std::function<void(float x, float y)> action);
     float velocitySquared(unsigned int particleIndex) { return vx[particleIndex]*vx[particleIndex] + vy[particleIndex]*vy[particleIndex]; }

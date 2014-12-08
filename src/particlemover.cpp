@@ -37,7 +37,7 @@ void ParticleMover::applyPeriodicBoundaryConditions()
 {
     CPElapsedTimer::periodicBoundaryConditions().start();
     Particles *particles = m_system->particles();
-    vec3 systemSize = m_system->size();
+    vec2 systemSize = m_system->size();
 
     const unsigned int numberOfParticles = particles->numberOfParticles();
     for(unsigned int i=0; i<numberOfParticles; i++) {

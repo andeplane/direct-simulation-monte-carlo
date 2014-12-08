@@ -26,6 +26,7 @@ void CPElapsedTimer::m_printReport(System *system)
     float systemInitializeFraction = m_systemInitialize.elapsedTime() / totalTime;
     float updateCellsFraction = m_updateCells.elapsedTime() / totalTime;
     float collideParticlesFraction = m_collideParticles.elapsedTime() / totalTime;
+    float recomputeMaxRelativeVelocityFraction = m_recomputeMaxRelativeVelocity.elapsedTime() / totalTime;
 
     unsigned int numberOfTimesteps = system->numberOfTimesteps();
     unsigned int numberOfParticles = system->particles()->numberOfParticles();
@@ -37,13 +38,14 @@ void CPElapsedTimer::m_printReport(System *system)
          << "    Time evolution       : " << m_timeEvolution.elapsedTime() << " s ( " << 100*timeEvolutionFraction << "%)" <<  endl
          << "    Move particles       : " << m_moveParticles.elapsedTime() << " s ( " << 100*moveParticlesFraction << "%)" <<  endl
          << "    Update cells         : " << m_updateCells.elapsedTime() << " s ( " << 100*updateCellsFraction << "%)" <<  endl
+         << "    Recompute v_rel      : " << m_recomputeMaxRelativeVelocity.elapsedTime() << " s ( " << 100*recomputeMaxRelativeVelocityFraction << "%)" <<  endl
          << "    Collide particles    : " << m_collideParticles.elapsedTime() << " s ( " << 100*collideParticlesFraction << "%)" <<  endl
          << "    Periodic boundary    : " << m_periodicBoundaryConditions.elapsedTime() << " s ( " << 100*periodicBoundaryConditionsFraction << "%)" <<  endl
          << "    Disk                 : " << m_disk.elapsedTime() << " s ( " << 100*diskFraction << "%)" <<  endl
          << "    Sampling             : " << m_sampling.elapsedTime() << " s ( " << 100*samplingFraction << "%)" <<  endl;
     cout << endl <<  numberOfTimesteps / totalTime << " timesteps / second. " << endl;
     cout << numberOfParticles*numberOfTimesteps / (1000*totalTime) << "k particle-timesteps / second. " << endl;
-    cout << numberOfCollisions/totalTime << " collisions / second (total " << numberOfCollisions << " collisions)." << endl;
+    cout << numberOfCollisions/totalTime/1e6 << " mega collisions / second (total " << numberOfCollisions/1e9 << " giga collisions)." << endl;
 
     float totalTimePerDay = system->totalTime()/totalTime * 86400;
     float microSecondsPerDay = UC::timeToSI(totalTimePerDay)*1e6;

@@ -10,6 +10,7 @@ unsigned int Particles::numberOfParticles() const
 
 void Particles::setNumberOfParticles(unsigned int numberOfParticles)
 {
+    assert(numberOfParticles <= MAXNUMPARTICLES && "Max number of particles exceeded. Increase MAXNUMPARTICLES.");
     m_numberOfParticles = numberOfParticles;
 }
 
@@ -21,10 +22,10 @@ void Particles::maxwellianVelocity(unsigned int particleIndex, float temperature
     vy[particleIndex] = random->nextGaussian(0, sqrtTemperatureOverMass);
 }
 
-void Particles::findPosition(unsigned int particleIndex, vec3 systemSize, Random *random)
+void Particles::findPosition(unsigned int particleIndex, vec2 systemSize, Random *random)
 {
-    x[particleIndex] = random->nextDouble() * systemSize.x();
-    y[particleIndex] = random->nextDouble() * systemSize.y();
+    x[particleIndex] = random->nextDouble() * systemSize[0];
+    y[particleIndex] = random->nextDouble() * systemSize[1];
 }
 
 void Particles::for_each(std::function<void (float, float, float, float)> action)

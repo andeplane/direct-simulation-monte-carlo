@@ -8,7 +8,7 @@ QMAKE_CXXFLAGS += -std=c++11 -xCORE-AVX-I -O3 -ipo -g
 
 #DEFINES += DSMC_DEBUG
 
-CONFIG += staticlib
+#CONFIG += staticlib
 TEMPLATE = lib
 
 TARGET = dsmc
@@ -24,7 +24,9 @@ SOURCES += system.cpp \
     particlemover.cpp \
     cpelapsedtimer.cpp \
     cellmanager.cpp \
-    statisticssampler.cpp
+    statisticssampler.cpp \
+    grid.cpp \
+    vec2.cpp
 HEADERS += system.h \
     cell.h \
     particles.h \
@@ -37,4 +39,6 @@ HEADERS += system.h \
     particlemover.h \
     cpelapsedtimer.h \
     cellmanager.h \
-    statisticssampler.h
+    statisticssampler.h \
+    grid.h \
+    vec2.h

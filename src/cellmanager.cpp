@@ -39,7 +39,7 @@ void CellManager::initialize(System *system)
 void CellManager::putAllParticlesInCells()
 {
     CPElapsedTimer::updateCells().start();
-    vec3 oneOverSystemSize = m_system->size();
+    vec2 oneOverSystemSize = m_system->size();
     float positionToCellIndexFactorX = 1.0/oneOverSystemSize[0] * m_numberOfCellsX;
     float positionToCellIndexFactorY = 1.0/oneOverSystemSize[1] * m_numberOfCellsY;
 
@@ -71,7 +71,7 @@ void CellManager::putAllParticlesInCells()
 void CellManager::updateParticleCells()
 {
     CPElapsedTimer::updateCells().start();
-    vec3 oneOverSystemSize = m_system->size();
+    vec2 oneOverSystemSize = m_system->size();
     float positionToCellIndexFactorX = 1.0/oneOverSystemSize[0] * m_numberOfCellsX;
     float positionToCellIndexFactorY = 1.0/oneOverSystemSize[1] * m_numberOfCellsY;
 
@@ -99,12 +99,14 @@ void CellManager::updateParticleCells()
     CPElapsedTimer::updateCells().stop();
 }
 
-void CellManager::recomputeRelativeVelocities()
+void CellManager::recomputeMaxRelativeVelocities()
 {
+    CPElapsedTimer::recomputeMaxRelativeVelocity().start();
     Particles *particles = m_system->particles();
     for(Cell &cell : m_cells) {
         cell.updateMaxRelativeVelocity(particles);
     }
+    CPElapsedTimer::recomputeMaxRelativeVelocity().stop();
 }
 
 void CellManager::collide(float dt, Random *random)

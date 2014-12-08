@@ -1,11 +1,12 @@
 #pragma once
-#include "vec3.h"
+#include "vec2.h"
 
 class Settings
 {
 public:
-    vec3 systemSize;
+    vec2 systemSize;
     bool loadState;
+    unsigned int recomputeMaxRelativeVelocityEvery;
     unsigned int atomsPerParticle;
     unsigned int particlesPerCell;
     float density;

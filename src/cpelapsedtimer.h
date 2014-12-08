@@ -44,6 +44,7 @@ public:
     CPTimingObject m_sampling;
     CPTimingObject m_disk;
     CPTimingObject m_timeEvolution;
+    CPTimingObject m_recomputeMaxRelativeVelocity;
     CPTimingObject m_systemInitialize;
     void m_printReport(System *system);
 
@@ -55,6 +56,7 @@ public:
     static CPTimingObject &disk() { return CPElapsedTimer::getInstance().m_disk; }
     static CPTimingObject &timeEvolution() { return CPElapsedTimer::getInstance().m_timeEvolution; }
     static CPTimingObject &systemInitialize() { return CPElapsedTimer::getInstance().m_systemInitialize; }
+    static CPTimingObject &recomputeMaxRelativeVelocity() { return CPElapsedTimer::getInstance().m_recomputeMaxRelativeVelocity; }
     static void printReport(System *system) { CPElapsedTimer::getInstance().m_printReport(system); }
 
     static double totalTime() { return double(clock() - CPElapsedTimer::getInstance().m_startedAt)/ CLOCKS_PER_SEC; }
