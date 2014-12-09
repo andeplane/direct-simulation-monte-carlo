@@ -41,7 +41,7 @@
 #include <vector>
 #include <cassert>
 #define RNDSTOREDNUMBERS 10000
-
+#ifdef FASTRAND
 class Random {
 private:
     uint32_t a[4];
@@ -85,3 +85,40 @@ public:
     int indexOfNextUnsignedInt() { return m_nextUnsignedInt; }
     void generateSSE4(unsigned int *result);
 };
+#else
+#define IA 16807
+#define IM 2147483647
+#define AM (1.0/IM)
+#define IQ 127773
+#define IR 2836
+#define NTAB 32
+#define NDIV (1+(IM-1)/NTAB)
+#define EPS 1.2e-7
+#define RNMX (1.0-EPS)
+
+class Random {
+public:
+    long     iy;
+    long     iv[NTAB];
+    long     idum[1];
+    const double normalizationFactor = 1.0/4294967295.0; // UINTMAX
+
+    float m_randomFloats[RNDSTOREDNUMBERS];
+    float m_randomDoubles[RNDSTOREDNUMBERS];
+    unsigned int m_randomUnsignedInts[RNDSTOREDNUMBERS];
+    unsigned int m_nextFloat;
+    unsigned int m_nextDouble;
+    unsigned int m_nextUnsignedInt;
+
+    Random(std::vector<unsigned short> seed = {});
+    void refillRandomFloats();
+    void refillRandomDoubles();
+    void refillRandomUnsignedInts();
+    double generateDouble();
+    float nextFloat() { return m_randomFloats[m_nextFloat++]; }
+    double nextDouble() { return m_randomDoubles[m_nextDouble++]; }
+    unsigned int nextUnsignedInt() { return m_randomUnsignedInts[m_nextUnsignedInt++]; }
+    double nextGaussian(const double mean, const double standardDeviation);
+    void generateSSE4(unsigned int *result);
+};
+#endif

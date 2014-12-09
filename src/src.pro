@@ -4,13 +4,14 @@ CONFIG   += console
 CONFIG   -= app_bundle
 CONFIG   -= qt
 CONFIG   += c++11
-QMAKE_CXXFLAGS += -std=c++11 -xCORE-AVX-I -O3 -ipo -g
-
+#QMAKE_CXXFLAGS += -std=c++11 -xCORE-AVX-I -O3 -ipo -g
+QMAKE_CXXFLAGS += -g -mtune=core-avx-i
+#DEFINES += FASTRAND
 #DEFINES += DSMC_DEBUG
 
 #CONFIG += staticlib
-#TEMPLATE = lib
-TEMPLATE = app
+TEMPLATE = lib
+#TEMPLATE = app
 
 TARGET = dsmc
 

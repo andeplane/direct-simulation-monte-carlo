@@ -16,7 +16,7 @@ void StatisticsSampler::sample(System *system)
 
 float StatisticsSampler::meanCollisionTime(System *system)
 {
-    float meanCollisionTime = 1.0 / (sqrt(2) * system->settings()->atomDiameter*system->settings()->density*averageVelocity(system));
+    float meanCollisionTime = 1.0 / (sqrt(2) * 2.0*system->settings()->atomDiameter*system->settings()->density*averageVelocity(system));
     return meanCollisionTime;
 }
 

@@ -3,7 +3,8 @@ CONFIG+=ordered
 CONFIG += c++11
 SUBDIRS += \
     src \
-    app
+    app \
+    visualization
 
 app.depends = src
 

@@ -35,6 +35,9 @@
 *****************************************************************************/
 
 #include "random.h"
+#include <cmath>
+
+#ifdef FASTRAND
 #include <xmmintrin.h>
 #include <emmintrin.h>
 #include <smmintrin.h>
@@ -53,13 +56,13 @@ Random::Random(std::vector<uint16_t> seeds) {
     assert((RNDSTOREDNUMBERS%4==0) && "RNDSTOREDNUMBERS needs to be a multiple of 4.");
 
     initFastRand(seeds[0], seeds[1],
-        seeds[2], seeds[3],
-        seeds[4], seeds[5],
-        seeds[6], seeds[7],
-        seeds[8], seeds[9],
-        seeds[10], seeds[11],
-        seeds[12], seeds[13],
-        seeds[14], seeds[15]);
+            seeds[2], seeds[3],
+            seeds[4], seeds[5],
+            seeds[6], seeds[7],
+            seeds[8], seeds[9],
+            seeds[10], seeds[11],
+            seeds[12], seeds[13],
+            seeds[14], seeds[15]);
 
     m_nextFloat = RNDSTOREDNUMBERS;
     m_nextDouble = RNDSTOREDNUMBERS;
@@ -127,14 +130,14 @@ void Random::refillRandomUnsignedInts() {
 }
 
 void Random::initFastRand(
-    uint16_t a1, uint16_t c1,
-    uint16_t b1, uint16_t d1,
-    uint16_t a2, uint16_t c2,
-    uint16_t b2, uint16_t d2,
-    uint16_t a3, uint16_t c3,
-    uint16_t b3, uint16_t d3,
-    uint16_t a4, uint16_t c4,
-    uint16_t b4, uint16_t d4)
+        uint16_t a1, uint16_t c1,
+        uint16_t b1, uint16_t d1,
+        uint16_t a2, uint16_t c2,
+        uint16_t b2, uint16_t d2,
+        uint16_t a3, uint16_t c3,
+        uint16_t b3, uint16_t d3,
+        uint16_t a4, uint16_t c4,
+        uint16_t b4, uint16_t d4)
 {
     //
     // Initialize MWC1616 masks and multipliers
@@ -208,3 +211,91 @@ void Random::generateSSE4(unsigned int *result) {
     __m128i newRes = _mm_add_epi32(ashiftnew, bmasknew);
     _mm_store_si128((__m128i *)result, newRes);
 }
+#else
+
+Random::Random(std::vector<unsigned short> seed)
+{
+    if(seed.size()==0) {
+        *idum = -1;
+    } else {
+        *idum = -seed[0];
+    }
+
+    iy = 0;
+    m_nextDouble=RNDSTOREDNUMBERS;
+    m_nextFloat=RNDSTOREDNUMBERS;
+    m_nextUnsignedInt=RNDSTOREDNUMBERS;
+    refillRandomDoubles();
+    refillRandomFloats();
+    refillRandomUnsignedInts();
+}
+
+void Random::refillRandomFloats()
+{
+    for(unsigned int i=0; i<m_nextFloat; i++) {
+        m_randomFloats[i] = generateDouble();
+    }
+
+    m_nextFloat = 0;
+}
+
+void Random::refillRandomDoubles()
+{
+    for(unsigned int i=0; i<m_nextDouble; i++) {
+        m_randomDoubles[i] = generateDouble();
+    }
+
+    m_nextDouble = 0;
+}
+
+void Random::refillRandomUnsignedInts()
+{
+    for(unsigned int i=0; i<m_nextUnsignedInt; i++) {
+        m_randomUnsignedInts[i] = generateDouble() * 4294967295.0;
+    }
+
+    m_nextUnsignedInt= 0;
+}
+
+double Random::generateDouble()
+{
+    int             j;
+    long            k;
+    double          temp;
+
+    if (*idum <= 0 || !iy) {
+        if (-(*idum) < 1) *idum=1;
+        else *idum = -(*idum);
+        for(j = NTAB + 7; j >= 0; j--) {
+            k     = (*idum)/IQ;
+            *idum = IA*(*idum - k*IQ) - IR*k;
+            if(*idum < 0) *idum += IM;
+            if(j < NTAB) iv[j] = *idum;
+        }
+        iy = iv[0];
+    }
+    k     = (*idum)/IQ;
+    *idum = IA*(*idum - k*IQ) - IR*k;
+    if(*idum < 0) *idum += IM;
+    j     = iy/NDIV;
+    iy    = iv[j];
+    iv[j] = *idum;
+    if((temp=AM*iy) > RNMX) return RNMX;
+    else return temp;
+}
+
+double Random::nextGaussian(const double mean, const double standardDeviation)
+{
+    double standardNormalRandomNumber = sqrt( -2.0*log(1.0 - nextDouble()) ) * cos( 6.283185307 * nextDouble() );
+    return standardDeviation*standardNormalRandomNumber + mean;
+}
+
+void Random::generateSSE4(unsigned int *result)
+{
+    result[0] = nextUnsignedInt();
+    result[1] = nextUnsignedInt();
+    result[2] = nextUnsignedInt();
+    result[3] = nextUnsignedInt();
+}
+
+#endif

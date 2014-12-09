@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>DSMC.qml</file>
+    </qresource>
+</RCC>

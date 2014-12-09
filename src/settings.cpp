@@ -2,7 +2,7 @@
 #include <cmath>
 
 Settings::Settings() :
-    systemSize(vec2(0.25,0.25)),
+    systemSize(vec2(1.0,1.0)),
     loadState(false),
     recomputeMaxRelativeVelocityEvery(100),
     atomsPerParticle(10),
