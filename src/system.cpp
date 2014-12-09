@@ -22,11 +22,15 @@ void System::initialize(Settings &settings)
     CPElapsedTimer::systemInitialize().start();
     m_random = new Random();
 
+    m_settings = &settings;
+    setSize(settings.systemSize);
+    cout << "Initializing grid..." << endl;
+    m_grid.initialize(720, 720, this);
+    m_grid.createSphere();
+
     cout << "Initializing particle mover..." << endl;
     m_particles = new Particles();
     m_particleMover.initialize(this);
-    m_settings = &settings;
-    setSize(settings.systemSize);
 
     if(settings.loadState) {
         cout << "Loading state..." << endl;
@@ -40,6 +44,9 @@ void System::initialize(Settings &settings)
 
     m_isInitialized = true;
     CPElapsedTimer::systemInitialize().stop();
+#ifdef DSMC_DEBUG
+    cout << "System initialized with size " << m_size << endl;
+#endif
 }
 
 
@@ -70,12 +77,11 @@ void System::loadState()
 void System::createParticles()
 {
     unsigned int numberOfParticles = m_settings->numberOfParticles();
-
     m_particles->setNumberOfParticles(numberOfParticles);
 
     cout << "Creating " << numberOfParticles << " particles..." << endl;
     for(unsigned int i=0; i<numberOfParticles; i++) {
-        m_particles->findPosition(i, m_size, m_random);
+        m_particles->findPosition(i, m_size, m_random, &m_grid);
         m_particles->maxwellianVelocity(i, m_settings->temperature, m_settings->mass*m_settings->atomsPerParticle, m_random);
         m_random->refillRandomDoubles();
     }

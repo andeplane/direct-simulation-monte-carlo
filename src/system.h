@@ -42,6 +42,7 @@ public:
     Particles *particles() { return m_particles; }
     CellManager *cellManager() { return &m_cellManager; }
     Grid *grid() { return &m_grid; }
+    Random *random() { return m_random; }
 };
 
 #endif // SYSTEM_H

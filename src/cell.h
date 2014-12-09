@@ -9,15 +9,15 @@ private:
     unsigned int m_numberOfParticles;
     unsigned long m_numberOfCollisionTrials;
     unsigned long m_numberOfCollisions;
-    float m_collisionRest;
-    float m_collisionCoefficient;
-    float m_volume;
-    float m_maxRelativeVelocitySquared;
-    void collideParticles(float &vxi, float &vyi, float &vxj, float &vyj, const float relativeVelocityHalf, const float randomNumber);
+    double m_collisionRest;
+    double m_collisionCoefficient;
+    double m_volume;
+    double m_maxRelativeVelocitySquared;
+    void collideParticles(double &vxi, double &vyi, double &vxj, double &vyj, const double relativeVelocityHalf, const double randomNumber);
 public:
     Cell();
-    void setVolume(float volume, unsigned int numberOfAtomsPerParticle, float atomDiameter);
-    unsigned long collide(float dt, Particles *particles, Random *random);
+    void setVolume(double volume, unsigned int numberOfAtomsPerParticle, double atomDiameter);
+    unsigned long collide(double dt, Particles *particles, Random *random);
     void addParticle(unsigned int particleIndex, unsigned int *particleIndexMap);
     void removeParticle(unsigned int particleIndex, unsigned int *particleIndexMap);
     unsigned int numberOfParticles() { return m_numberOfParticles; }

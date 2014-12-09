@@ -114,7 +114,7 @@ float vec2::length() {
 }
 
 void vec2::normalize() {
-    float myLength = length();
+    double myLength = length();
     if(myLength > 0) { // Don't divide by zero...
         m_vec[0] /= myLength;
         m_vec[1] /= myLength;

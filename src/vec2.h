@@ -31,9 +31,19 @@ public:
         m_vec[0] += rhs.x();
         m_vec[1] += rhs.y();
     }
-    void addAndMultiply(vec2 &rhs, float scalar) {
+
+    void subtract(vec2 &rhs) {
+        m_vec[0] -= rhs.x();
+        m_vec[1] -= rhs.y();
+    }
+
+    void addAndMultiply(vec2 &rhs, double scalar) {
         m_vec[0] += rhs.x()*scalar;
         m_vec[1] += rhs.y()*scalar;
+    }
+
+    float cross(vec2 &rhs) {
+        return m_vec[0] * rhs.y() - m_vec[1] * rhs.x();
     }
     float dot(vec2 &rhs);
     float length();

@@ -1,5 +1,6 @@
 #include "particles.h"
 #include "random.h"
+#include "grid.h"
 #include <cmath>
 
 
@@ -22,10 +23,14 @@ void Particles::maxwellianVelocity(unsigned int particleIndex, float temperature
     vy[particleIndex] = random->nextGaussian(0, sqrtTemperatureOverMass);
 }
 
-void Particles::findPosition(unsigned int particleIndex, vec2 systemSize, Random *random)
+void Particles::findPosition(unsigned int particleIndex, vec2 systemSize, Random *random, Grid *grid)
 {
-    x[particleIndex] = random->nextDouble() * systemSize[0];
-    y[particleIndex] = random->nextDouble() * systemSize[1];
+    bool isInsideWallVoxel = true;
+    while(isInsideWallVoxel) {
+        x[particleIndex] = random->nextDouble() * systemSize[0];
+        y[particleIndex] = random->nextDouble() * systemSize[1];
+        isInsideWallVoxel = grid->isInsideWallVoxel(x[particleIndex], y[particleIndex]);
+    }
 }
 
 void Particles::for_each(std::function<void (float, float, float, float)> action)

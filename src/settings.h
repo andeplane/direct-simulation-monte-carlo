@@ -9,14 +9,16 @@ public:
     unsigned int recomputeMaxRelativeVelocityEvery;
     unsigned int atomsPerParticle;
     unsigned int particlesPerCell;
-    float density;
-    float mass;
-    float atomDiameter;
-    float temperature;
+    double density;
+    double mass;
+    double atomDiameter;
+    double temperature;
     Settings();
 
-    float volume() { return systemSize[0]*systemSize[1]; }
+    double volume() { return systemSize[0]*systemSize[1]; }
     unsigned long numberOfAtoms() { return density * volume(); }
     unsigned int numberOfParticles() { return numberOfAtoms() / atomsPerParticle; }
     unsigned int numberOfCells() { return numberOfParticles() / particlesPerCell; }
+    double massPerParticle() { return mass*atomsPerParticle; }
+    double meanFreePath();
 };

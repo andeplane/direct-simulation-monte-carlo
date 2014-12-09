@@ -16,21 +16,21 @@ Cell::Cell() :
 {
 }
 
-void Cell::setVolume(float volume, unsigned int numberOfAtomsPerParticle, float atomDiameter)
+void Cell::setVolume(double volume, unsigned int numberOfAtomsPerParticle, double atomDiameter)
 {
     m_volume = volume;
-    m_collisionCoefficient = numberOfAtomsPerParticle*atomDiameter / (2*volume);
+    m_collisionCoefficient = numberOfAtomsPerParticle*atomDiameter / volume;
 }
 
-void Cell::collideParticles(float &vxi, float &vyi, float &vxj, float &vyj, const float relativeVelocityHalf, const float randomNumber) {
-    const float vcmx = 0.5f*(vxi + vxj); // Center of mass velocity
-    const float vcmy = 0.5f*(vyi + vyj);
+void Cell::collideParticles(double &vxi, double &vyi, double &vxj, double &vyj, const double relativeVelocityHalf, const double randomNumber) {
+    const double vcmx = 0.5f*(vxi + vxj); // Center of mass velocity
+    const double vcmy = 0.5f*(vyi + vyj);
 
-    const float cosTheta = 1.0f - 2.0f*randomNumber;
-    const float sinTheta = sqrt(1.0f - cosTheta*cosTheta);
+    const double cosTheta = 1.0f - 2.0f*randomNumber;
+    const double sinTheta = sqrt(1.0f - cosTheta*cosTheta);
 
-    const float vrelxHalf = relativeVelocityHalf*sinTheta;
-    const float vrelyHalf = relativeVelocityHalf*cosTheta;
+    const double vrelxHalf = relativeVelocityHalf*sinTheta;
+    const double vrelyHalf = relativeVelocityHalf*cosTheta;
 
     vxi = vcmx + vrelxHalf;
     vyi = vcmy + vrelyHalf;
@@ -38,13 +38,14 @@ void Cell::collideParticles(float &vxi, float &vyi, float &vxj, float &vyj, cons
     vyj = vcmy - vrelyHalf;
 }
 
-unsigned long Cell::collide(float dt, Particles *particles, Random *random) {
+unsigned long Cell::collide(double dt, Particles *particles, Random *random) {
+    if(m_numberOfParticles < 2) return 0;
     // Compute how many collision candidates to perform
-    float numberOfCollisionTrials = m_collisionCoefficient*m_numberOfParticles*(m_numberOfParticles-1)*sqrt(m_maxRelativeVelocitySquared)*dt + m_collisionRest;
+    double numberOfCollisionTrials = m_collisionCoefficient*m_numberOfParticles*(m_numberOfParticles-1)*sqrt(m_maxRelativeVelocitySquared)*dt + m_collisionRest;
     unsigned int numberOfCollisionTrialsRounded = round(numberOfCollisionTrials);
     m_collisionRest = numberOfCollisionTrials - numberOfCollisionTrialsRounded;
-    float *vx = &particles->vx[0];
-    float *vy = &particles->vy[0];
+    double *vx = &particles->vx[0];
+    double *vy = &particles->vy[0];
     m_numberOfCollisionTrials += numberOfCollisionTrialsRounded;
 
     for(unsigned int collision=0; collision<numberOfCollisionTrialsRounded; collision++) {
@@ -56,9 +57,9 @@ unsigned long Cell::collide(float dt, Particles *particles, Random *random) {
 
         const unsigned int i = m_particleIndices[localParticleIndex1];
         const unsigned int j = m_particleIndices[localParticleIndex2];
-        const float dvx = vx[i] - vx[j];
-        const float dvy = vy[i] - vy[j];
-        const float relativeVelocitySquared = dvx*dvx + dvy*dvy;
+        const double dvx = vx[i] - vx[j];
+        const double dvy = vy[i] - vy[j];
+        const double relativeVelocitySquared = dvx*dvx + dvy*dvy;
 
         if(relativeVelocitySquared > m_maxRelativeVelocitySquared) {
             m_maxRelativeVelocitySquared = relativeVelocitySquared;
@@ -67,7 +68,7 @@ unsigned long Cell::collide(float dt, Particles *particles, Random *random) {
         float randomNumber = rands[2]*random->normalizationFactor;
 
         if(relativeVelocitySquared > randomNumber*randomNumber*m_maxRelativeVelocitySquared) {
-            const float relativeVelocityHalf = 0.5*sqrt(relativeVelocitySquared);
+            const double relativeVelocityHalf = 0.5*sqrt(relativeVelocitySquared);
             m_numberOfCollisions++;
             collideParticles(vx[i], vy[i], vx[j], vy[j], relativeVelocityHalf, rands[3]*random->normalizationFactor);
         }
@@ -99,9 +100,9 @@ void Cell::updateMaxRelativeVelocity(Particles *particles) {
     m_maxRelativeVelocitySquared = 0;
     for(unsigned int i=0; i<m_numberOfParticles; i++) {
         for(unsigned int j=i+1; j<m_numberOfParticles; j++) {
-            float dvx = particles->vx[i] - particles->vx[j];
-            float dvy = particles->vy[i] - particles->vy[j];
-            float dv = dvx*dvx + dvy*dvy;
+            double dvx = particles->vx[i] - particles->vx[j];
+            double dvy = particles->vy[i] - particles->vy[j];
+            double dv = dvx*dvx + dvy*dvy;
             m_maxRelativeVelocitySquared = std::max(m_maxRelativeVelocitySquared, dv);
         }
     }

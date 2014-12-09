@@ -9,7 +9,8 @@ QMAKE_CXXFLAGS += -std=c++11 -xCORE-AVX-I -O3 -ipo -g
 #DEFINES += DSMC_DEBUG
 
 #CONFIG += staticlib
-TEMPLATE = lib
+#TEMPLATE = lib
+TEMPLATE = app
 
 TARGET = dsmc
 
@@ -26,7 +27,8 @@ SOURCES += system.cpp \
     cellmanager.cpp \
     statisticssampler.cpp \
     grid.cpp \
-    vec2.cpp
+    vec2.cpp \
+    main.cpp
 HEADERS += system.h \
     cell.h \
     particles.h \
