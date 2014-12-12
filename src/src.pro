@@ -5,7 +5,7 @@ CONFIG   -= app_bundle
 CONFIG   -= qt
 CONFIG   += c++11
 #QMAKE_CXXFLAGS += -std=c++11 -xCORE-AVX-I -O3 -ipo -g
-QMAKE_CXXFLAGS += -g -mtune=core-avx-i
+QMAKE_CXXFLAGS += -g
 #DEFINES += FASTRAND
 #DEFINES += DSMC_DEBUG
 
@@ -29,7 +29,8 @@ SOURCES += system.cpp \
     statisticssampler.cpp \
     grid.cpp \
     vec2.cpp \
-    main.cpp
+    main.cpp \
+    geometry.cpp
 HEADERS += system.h \
     cell.h \
     particles.h \
@@ -44,4 +45,5 @@ HEADERS += system.h \
     cellmanager.h \
     statisticssampler.h \
     grid.h \
-    vec2.h
+    vec2.h \
+    geometry.h

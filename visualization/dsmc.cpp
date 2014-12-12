@@ -65,6 +65,7 @@ DSMC::DSMC()
       m_showParticles(true),
       m_showScalarField(true)
 {
+    m_lines.updateId = 0;
     m_scalarField.numPointsX = 0;
     m_scalarField.numPointsY = 0;
     m_dsmcSimulator.moveToThread(&m_simulatorWorker);
@@ -99,6 +100,13 @@ void DSMC::setRunning(bool arg)
     update();
 }
 
+vec2 DSMC::scalePosition(const vec2 &position) {
+    vec2 scaledPosition;
+    scaledPosition[0] = 2*(position[0] / m_systemSize[0] - 0.5);
+    scaledPosition[1] = 2*(position[1] / m_systemSize[1] - 0.5);
+    return scaledPosition;
+}
+
 void DSMC::step()
 {
     if(!m_running) {
@@ -113,18 +121,29 @@ void DSMC::step()
     }
 }
 
+void DSMC::updateLines()
+{
+    if(m_dsmcSimulator.system.geometry()->updateId() != m_lines.updateId) {
+        Geometry *geometry = m_dsmcSimulator.system.geometry();
+        m_lines.updateId = geometry->updateId();
+        m_lines.pairs = geometry->lines();
+        m_lines.points = geometry->points();
+        for(vec2 &point : m_lines.points) {
+            point = scalePosition(point);
+        }
+    }
+}
+
 void DSMC::updatePositions()
 {
     Particles *particles = m_dsmcSimulator.system.particles();
-    m_systemSize[0] = m_dsmcSimulator.system.size()[0];
-    m_systemSize[1] = m_dsmcSimulator.system.size()[1];
-    m_systemSize[2] = 0;
-    
+
     m_positions.resize(particles->numberOfParticles());
     const unsigned int numberOfParticles = particles->numberOfParticles();
     for(unsigned int i=0; i<numberOfParticles; i++) {
-        m_positions[i][0] = 2*(particles->x[i] / m_systemSize[0] - 0.5); // Scale all positions so they are in the range (-1,1)
-        m_positions[i][1] = 2*(particles->y[i] / m_systemSize[1] - 0.5);
+        m_positions[i][0] = particles->x[i];
+        m_positions[i][1] = particles->y[i];
+        m_positions[i] = scalePosition(m_positions[i]);
     }
 }
 
@@ -153,8 +172,14 @@ void DSMC::updateScalarValues()
 
 void DSMC::finalizeStep()
 {
+
     m_simulatorOutputMutex.lock();
+    m_systemSize[0] = m_dsmcSimulator.system.size()[0];
+    m_systemSize[1] = m_dsmcSimulator.system.size()[1];
+    m_systemSize[2] = 0;
+
     updatePositions();
+    updateLines();
     updateScalarValues();
     m_previousStepCompleted = true;
     m_simulatorOutputDirty = true;

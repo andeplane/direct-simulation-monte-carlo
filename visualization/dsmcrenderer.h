@@ -9,6 +9,7 @@
 #include <QMutex>
 #include "scalarfield.h"
 #include "points.h"
+#include "lines.h"
 
 class DSMCRenderer : public QQuickFramebufferObject::Renderer
 {
@@ -32,9 +33,9 @@ private:
     QMatrix4x4 m_modelViewMatrix;
     QMatrix4x4 m_lightModelViewMatrix;
 
-    std::vector<QVector3D> m_positions;
     Points *m_points;
     ScalarField *m_scalarField;
+    Lines  *m_lines;
 
     bool m_skipNextFrame;
     bool m_showGeometry;

@@ -51,6 +51,7 @@
 #include <QThread>
 #include <QMutex>
 #include "dsmcrenderer.h"
+#include "lines.h"
 
 class DSMC : public QQuickFramebufferObject
 {
@@ -76,8 +77,9 @@ public:
     bool previousStepCompleted() const;
     bool simulatorOutputDirty() const;
 
-    std::vector<QVector3D> m_positions;
+    std::vector<vec2> m_positions;
     ScalarFieldContainer   m_scalarField;
+    LinesContainer         m_lines;
 
     bool showGeometry() const
     {
@@ -180,4 +182,6 @@ private:
     bool m_showGeometry;
     bool m_showParticles;
     bool m_showScalarField;
+    void updateLines();
+    vec2 scalePosition(const vec2 &position);
 };

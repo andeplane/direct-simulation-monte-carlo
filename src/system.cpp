@@ -27,6 +27,7 @@ void System::initialize(Settings &settings)
     cout << "Initializing grid..." << endl;
     m_grid.initialize(128, 128, this);
     m_grid.createSphere();
+    m_geometry.generateFromGrid(&m_grid);
 
     cout << "Initializing particle mover..." << endl;
     m_particles = new Particles();

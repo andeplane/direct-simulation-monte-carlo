@@ -53,6 +53,8 @@ public:
     float tangent(unsigned int voxelIndex, unsigned int component) { return m_tangents[voxelIndex][component]; }
     unsigned int width() { return m_width; }
     unsigned int height() { return m_height; }
+    unsigned int numberOfVoxels() { return m_width*m_height; }
     float timeUntilCollision(unsigned int voxelIndex, vec2 r0, vec2 v);
     void createSphere();
+    vec2 voxelSize() { return m_voxelSize; }
 };

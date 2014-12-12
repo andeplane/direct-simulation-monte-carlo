@@ -3,17 +3,26 @@
 #include <QOpenGLFunctions>
 #include <vector>
 #include <system.h>
+#include <vector>
+#include <utility>
 
-class Points
+struct LinesContainer {
+    unsigned int updateId;
+    vector<vec2> points;
+    vector<std::pair<unsigned int, unsigned int> > pairs;
+};
+
+class Lines
 {
 public:
-    Points();
-    ~Points();
-    void update(const vector<vec2> &positions);
+    Lines();
+    ~Lines();
+    void update(LinesContainer &lines);
     void render();
 private:
-    GLuint m_vboIds[1];
+    GLuint m_vboIds[2];
     std::vector<vec2> m_vertices;
+    std::vector<unsigned int>    m_indices;
     QOpenGLFunctions *m_funcs;
     QOpenGLShaderProgram *m_program;
 

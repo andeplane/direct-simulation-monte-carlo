@@ -12,7 +12,8 @@ SOURCES += main.cpp \
     dsmcrenderer.cpp \
     quads.cpp \
     points.cpp \
-    scalarfield.cpp
+    scalarfield.cpp \
+    lines.cpp
 
 RESOURCES += qml.qrc
 
@@ -28,4 +29,5 @@ HEADERS += \
     dsmcrenderer.h \
     quads.h \
     points.h \
-    scalarfield.h
+    scalarfield.h \
+    lines.h
