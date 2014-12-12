@@ -25,7 +25,7 @@ void System::initialize(Settings &settings)
     m_settings = &settings;
     setSize(settings.systemSize);
     cout << "Initializing grid..." << endl;
-    m_grid.initialize(720, 720, this);
+    m_grid.initialize(128, 128, this);
     m_grid.createSphere();
 
     cout << "Initializing particle mover..." << endl;
@@ -44,9 +44,7 @@ void System::initialize(Settings &settings)
 
     m_isInitialized = true;
     CPElapsedTimer::systemInitialize().stop();
-#ifdef DSMC_DEBUG
     cout << "System initialized with size " << m_size << endl;
-#endif
 }
 
 

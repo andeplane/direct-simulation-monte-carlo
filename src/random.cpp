@@ -230,6 +230,13 @@ Random::Random(std::vector<unsigned short> seed)
     refillRandomUnsignedInts();
 }
 
+void Random::refillAllRandoms()
+{
+    refillRandomDoubles();
+    refillRandomFloats();
+    refillRandomUnsignedInts();
+}
+
 void Random::refillRandomFloats()
 {
     for(unsigned int i=0; i<m_nextFloat; i++) {

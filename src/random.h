@@ -40,7 +40,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <cassert>
-#define RNDSTOREDNUMBERS 10000
+#define RNDSTOREDNUMBERS 100000
 #ifdef FASTRAND
 class Random {
 private:
@@ -111,6 +111,7 @@ public:
     unsigned int m_nextUnsignedInt;
 
     Random(std::vector<unsigned short> seed = {});
+    void refillAllRandoms();
     void refillRandomFloats();
     void refillRandomDoubles();
     void refillRandomUnsignedInts();

@@ -117,6 +117,7 @@ void CellManager::collide(float dt, Random *random)
     for(unsigned int i=0; i<numberOfCells; i++) {
         Cell &cell = m_cells[i];
         m_numberOfCollisions += cell.collide(dt, m_system->particles(), random);
+        random->refillAllRandoms();
     }
     CPElapsedTimer::collideParticles().stop();
 }

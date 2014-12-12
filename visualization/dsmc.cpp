@@ -40,8 +40,9 @@
 ****************************************************************************/
 
 #include "dsmc.h"
-
 #include "dsmcrenderer.h"
+#include <particles.h>
+#include <system.h>
 
 #include <QtQuick/qquickwindow.h>
 #include <QtGui/QOpenGLShaderProgram>
@@ -61,12 +62,13 @@ DSMC::DSMC()
       m_simulatorOutputDirty(false),
       m_lastStepWasBlocked(false)
 {
-    m_timer.start();
-
+    m_scalarField.numPointsX = 0;
+    m_scalarField.numPointsY = 0;
     m_dsmcSimulator.moveToThread(&m_simulatorWorker);
     connect(this, &DSMC::requestStep, &m_dsmcSimulator, &Simulator::step);
     connect(&m_dsmcSimulator, &Simulator::stepCompleted, this, &DSMC::finalizeStep);
     m_simulatorWorker.start();
+    m_timer.start();
 }
 
 DSMC::~DSMC()
@@ -88,7 +90,7 @@ void DSMC::setRunning(bool arg)
 {
     if (m_running == arg)
         return;
-
+    
     m_running = arg;
     emit runningChanged(arg);
     update();
@@ -99,11 +101,8 @@ void DSMC::step()
     if(!m_running) {
         return;
     }
-
     if(m_simulatorRunningMutex.tryLock()) {
-        double dt = m_timer.restart() / 1000.0;
-        double safeDt = min(0.02, dt);
-        // m_dsmcSimulator.m_system.setDt(safeDt);
+        // double dt = m_timer.restart() / 1000.0;
         m_lastStepWasBlocked = false;
         emit requestStep();
     } else {
@@ -111,19 +110,58 @@ void DSMC::step()
     }
 }
 
+void DSMC::updatePositions()
+{
+    Particles *particles = m_dsmcSimulator.system.particles();
+    m_systemSize[0] = m_dsmcSimulator.system.size()[0];
+    m_systemSize[1] = m_dsmcSimulator.system.size()[1];
+    m_systemSize[2] = 0;
+    
+    m_positions.resize(particles->numberOfParticles());
+    const unsigned int numberOfParticles = particles->numberOfParticles();
+    for(unsigned int i=0; i<numberOfParticles; i++) {
+        m_positions[i][0] = 2*(particles->x[i] / m_systemSize[0] - 0.5); // Scale all positions so they are in the range (-1,1)
+        m_positions[i][1] = 2*(particles->y[i] / m_systemSize[1] - 0.5);
+    }
+}
+
+void DSMC::updateScalarValues()
+{
+    Grid *grid = m_dsmcSimulator.system.grid();
+    //    m_scalarField.numPointsX = grid->width()+1;
+    //    m_scalarField.numPointsY = grid->height()+1;
+    m_scalarField.numPointsX = grid->width();
+    m_scalarField.numPointsY = grid->height();
+    
+    unsigned int numVoxels = m_scalarField.numPointsX*m_scalarField.numPointsY;
+    cout << "In DSMC grid, we have " << numVoxels << " voxels. " << endl;
+    m_scalarField.values.resize(numVoxels);
+    for(int i=0; i<int(m_scalarField.numPointsX); i++) {
+        for(int j=0; j<int(m_scalarField.numPointsY); j++) {
+            unsigned int thisGridIndex = i + j*m_scalarField.numPointsX;
+            int index0 = grid->index(i,j);
+            int index1 = grid->indexPeriodic(i-1, j);
+            int index2 = grid->indexPeriodic(i-1, j-1);
+            int index3 = grid->indexPeriodic(i, j-1);
+            m_scalarField.values[thisGridIndex] = grid->voxelWithIndex(index0);
+        }
+    }
+}
+
 void DSMC::finalizeStep()
 {
     m_simulatorOutputMutex.lock();
-    // m_positions = m_dsmcSimulator.m_system.positions;
+    updatePositions();
+    updateScalarValues();
     m_previousStepCompleted = true;
     m_simulatorOutputDirty = true;
     m_simulatorOutputMutex.unlock();
     m_simulatorRunningMutex.unlock();
     update();
-
-    if(m_lastStepWasBlocked && m_running) {
+    
+    if(m_lastStepWasBlocked) {
         m_lastStepWasBlocked = false;
-        emit requestStep();
+        step();
     }
 }
 

@@ -1,0 +1,34 @@
+#pragma once
+#include <QtGui/QOpenGLShaderProgram>
+#include <QOpenGLFunctions>
+#include <vector>
+#include <system.h>
+
+struct VertexData
+{
+    QVector3D position;
+    QVector3D color;
+    QVector2D textureCoord;
+};
+
+class Quads
+{
+public:
+    Quads();
+    ~Quads();
+    void update(const vector<QVector3D> &positions, const QVector3D &offset);
+    void render(float lightFalloffDistance, const QMatrix4x4 &modelViewProjectionMatrix, const QMatrix4x4 &lightModelViewProjectionMatrix);
+    void setModelViewMatrix(QMatrix4x4& matrix);
+private:
+    GLuint m_vboIds[2];
+    std::vector<VertexData> m_vertices;
+    std::vector<GLushort> m_indices;
+    QOpenGLFunctions *m_funcs;
+    QMatrix4x4 m_modelViewMatrix;
+    QOpenGLShaderProgram *m_program;
+
+    void createShaderProgram();
+    void generateVBOs();
+    void ensureInitialized();
+    QVector3D vectorFromColor(const QColor &color);
+};

@@ -38,6 +38,7 @@ public:
     vector<vec2> cornersForVoxelWithIndex(unsigned int voxelIndex);
     unsigned char voxelWithIndex(unsigned int idx) { return m_voxels[idx]; }
     unsigned int index(unsigned int i, unsigned int j) { return i + j*m_width; }
+    unsigned int index(int i, int j) { return i + j*m_width; }
     unsigned int indexPeriodic(int i, int j) { return ((i + m_width) % m_width) + ((j + m_height) % m_height)*m_width; }
     void index2D(unsigned int idx, unsigned int &i, unsigned int &j) { j = idx / m_width; i = idx % m_width; }
     void setValue(unsigned int i, unsigned int j, unsigned char value) { m_voxels[index(i,j)] = value; }
@@ -50,7 +51,8 @@ public:
     bool isInsideWallVoxel(double x, double y);
     float normal(unsigned int voxelIndex, unsigned int component) { return m_normals[voxelIndex][component]; }
     float tangent(unsigned int voxelIndex, unsigned int component) { return m_tangents[voxelIndex][component]; }
-
+    unsigned int width() { return m_width; }
+    unsigned int height() { return m_height; }
     float timeUntilCollision(unsigned int voxelIndex, vec2 r0, vec2 v);
     void createSphere();
 };

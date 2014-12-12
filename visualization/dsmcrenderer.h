@@ -7,6 +7,8 @@
 #include <QQuickFramebufferObject>
 #include <QThread>
 #include <QMutex>
+#include "scalarfield.h"
+#include "points.h"
 
 class DSMCRenderer : public QQuickFramebufferObject::Renderer
 {
@@ -30,8 +32,9 @@ private:
     QMatrix4x4 m_modelViewMatrix;
     QMatrix4x4 m_lightModelViewMatrix;
 
-    std::vector<double> m_positions;
-    std::vector<unsigned long> m_atomTypes;
+    std::vector<QVector3D> m_positions;
+    Points *m_points;
+    ScalarField *m_scalarField;
 
     bool m_skipNextFrame;
 

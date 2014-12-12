@@ -1,13 +1,17 @@
 #include "simulator.h"
 #include <iostream>
+#include <particles.h>
+#include <statisticssampler.h>
+#include <unitconverter.h>
+
 using namespace std;
 
 Simulator::Simulator(QObject *parent) :
     QObject(parent)
 {
-    // m_system.setup(&m_settings);
-
-    // m_sampler = new StatisticsSampler(&m_system);
+    system.initialize(settings);
+    float meanCollisionTime = sampler.meanCollisionTime(&system);
+    dt = meanCollisionTime * 0.2;
 }
 
 Simulator::~Simulator()
@@ -16,11 +20,10 @@ Simulator::~Simulator()
 }
 
 void Simulator::step() {
-
-//    m_system.sample_statistics = m_settings.statistics_interval && ((m_system.steps) % m_settings.statistics_interval == 0);
-//    m_system.step();
-//    if(m_system.sample_statistics) m_sampler->sample();
-//    if(m_settings.thermostat_enabled) m_thermostat->apply(m_sampler,&m_system,m_settings.temperature, false);
-//    if(m_settings.thermostat_frozen_enabled) m_thermostat->apply(m_sampler,&m_system,m_settings.temperature,true);
-//    emit stepCompleted();
+    system.step(dt);
+    if(system.numberOfTimesteps() % 100 == 0) {
+        sampler.sample(&system);
+        cout << system.numberOfTimesteps() << "   E/n=" << UC::energyToEv(sampler.kineticEnergy())/system.particles()->numberOfParticles() << " [eV]   T=" << UC::temperatureToSI(sampler.temperature()) << " [K]   Acceptance ratio: " << system.cellManager()->acceptanceRatio() << endl;
+    }
+    emit stepCompleted();
 }

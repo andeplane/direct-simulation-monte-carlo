@@ -2,8 +2,9 @@
 
 #include <QObject>
 
-// #include <system.h>
-// #include <settings.h>
+#include <system.h>
+#include <settings.h>
+#include <statisticssampler.h>
 
 class Simulator : public QObject
 {
@@ -12,9 +13,10 @@ public:
     Simulator(QObject* parent = 0);
     ~Simulator();
 
-    // System m_system;
-    // Settings m_settings;
-    // StatisticsSampler *m_sampler;
+    System system;
+    Settings settings;
+    StatisticsSampler sampler;
+    float dt;
 
 public slots:
     void step();

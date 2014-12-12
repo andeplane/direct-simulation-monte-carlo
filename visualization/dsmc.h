@@ -73,7 +73,8 @@ public:
     bool previousStepCompleted() const;
     bool simulatorOutputDirty() const;
 
-    std::vector<double> m_positions;
+    std::vector<QVector3D> m_positions;
+    ScalarFieldContainer   m_scalarField;
 
 public slots:
     void setRunning(bool arg);
@@ -110,4 +111,6 @@ private:
     QThread m_simulatorWorker;
 
     friend class DSMCRenderer;
+    void updatePositions();
+    void updateScalarValues();
 };
