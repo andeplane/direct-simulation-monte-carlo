@@ -60,6 +60,12 @@ Item {
     }
 
     Keys.onPressed: {
-
+        if(event.key === Qt.Key_P) {
+            dsmc.toggleShowParticles();
+        } else if(event.key === Qt.Key_S) {
+            dsmc.toggleShowScalarField();
+        } else if(event.key === Qt.Key_G) {
+            dsmc.toggleShowGeometry();
+        }
     }
 }

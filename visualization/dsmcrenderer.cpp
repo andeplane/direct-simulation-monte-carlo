@@ -19,12 +19,14 @@ void DSMCRenderer::synchronize(QQuickFramebufferObject* item)
     if(!dsmc) {
         return;
     }
+    m_showGeometry = dsmc->showGeometry();
+    m_showParticles = dsmc->showParticles();
+    m_showScalarField = dsmc->showScalarField();
     resetProjection();
 
     if(dsmc->simulatorOutputDirty()) {
         dsmc->m_simulatorOutputMutex.lock();
         m_positions = dsmc->m_positions;
-        cout << "Updating scalar field in renderer with " << dsmc->m_scalarField.values.size() << " values." << endl;
         m_scalarField->update(dsmc->m_scalarField);
         dsmc->setSimulatorOutputDirty(false);
         dsmc->m_simulatorOutputMutex.unlock();
@@ -48,9 +50,11 @@ void DSMCRenderer::render()
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 
-    m_scalarField->render();
-    m_points->update(m_positions);
-    // m_points->render();
+    if(m_showScalarField) m_scalarField->render();
+    if(m_showParticles) {
+        m_points->update(m_positions);
+        m_points->render();
+    }
 
     glDepthMask(GL_TRUE);
 
@@ -61,6 +65,9 @@ void DSMCRenderer::render()
 
 DSMCRenderer::DSMCRenderer() :
     m_skipNextFrame(false),
+    m_showGeometry(true),
+    m_showParticles(true),
+    m_showScalarField(true),
     m_syncCount(0),
     m_renderCount(0),
     m_dirtyCount(0),

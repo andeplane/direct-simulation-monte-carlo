@@ -37,6 +37,9 @@ private:
     ScalarField *m_scalarField;
 
     bool m_skipNextFrame;
+    bool m_showGeometry;
+    bool m_showScalarField;
+    bool m_showParticles;
 
     int m_syncCount;
     int m_renderCount;

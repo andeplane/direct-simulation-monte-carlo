@@ -60,7 +60,10 @@ DSMC::DSMC()
       m_stepRequested(false),
       m_previousStepCompleted(true),
       m_simulatorOutputDirty(false),
-      m_lastStepWasBlocked(false)
+      m_lastStepWasBlocked(false),
+      m_showGeometry(true),
+      m_showParticles(true),
+      m_showScalarField(true)
 {
     m_scalarField.numPointsX = 0;
     m_scalarField.numPointsY = 0;
@@ -132,9 +135,8 @@ void DSMC::updateScalarValues()
     //    m_scalarField.numPointsY = grid->height()+1;
     m_scalarField.numPointsX = grid->width();
     m_scalarField.numPointsY = grid->height();
-    
+
     unsigned int numVoxels = m_scalarField.numPointsX*m_scalarField.numPointsY;
-    cout << "In DSMC grid, we have " << numVoxels << " voxels. " << endl;
     m_scalarField.values.resize(numVoxels);
     for(int i=0; i<int(m_scalarField.numPointsX); i++) {
         for(int j=0; j<int(m_scalarField.numPointsY); j++) {
@@ -144,6 +146,7 @@ void DSMC::updateScalarValues()
             int index2 = grid->indexPeriodic(i-1, j-1);
             int index3 = grid->indexPeriodic(i, j-1);
             m_scalarField.values[thisGridIndex] = grid->voxelWithIndex(index0);
+            // m_scalarField.values[thisGridIndex] = 0.25*(grid->voxelWithIndex(index0) + grid->voxelWithIndex(index1) + grid->voxelWithIndex(index2) + grid->voxelWithIndex(index3));
         }
     }
 }

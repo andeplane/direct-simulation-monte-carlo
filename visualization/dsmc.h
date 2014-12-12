@@ -58,6 +58,9 @@ class DSMC : public QQuickFramebufferObject
     Q_PROPERTY(QVector3D systemSize READ systemSize )
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(bool previousStepCompleted READ previousStepCompleted NOTIFY previousStepCompletedChanged)
+    Q_PROPERTY(bool showGeometry READ showGeometry WRITE setShowGeometry NOTIFY showGeometryChanged)
+    Q_PROPERTY(bool showParticles READ showParticles WRITE setShowParticles NOTIFY showParticlesChanged)
+    Q_PROPERTY(bool showScalarField READ showScalarField WRITE setShowScalarField NOTIFY showScalarFieldChanged)
 
 public:
     DSMC();
@@ -76,10 +79,64 @@ public:
     std::vector<QVector3D> m_positions;
     ScalarFieldContainer   m_scalarField;
 
+    bool showGeometry() const
+    {
+        return m_showGeometry;
+    }
+
+    bool showParticles() const
+    {
+        return m_showParticles;
+    }
+
+    bool showScalarField() const
+    {
+        return m_showScalarField;
+    }
+
 public slots:
     void setRunning(bool arg);
     void setPreviousStepCompleted(bool arg);
     void setSimulatorOutputDirty(bool arg);
+
+    void setShowGeometry(bool arg)
+    {
+        if (m_showGeometry == arg)
+            return;
+
+        m_showGeometry = arg;
+        emit showGeometryChanged(arg);
+    }
+
+    void toggleShowParticles() {
+        setShowParticles(!m_showParticles);
+    }
+
+    void toggleShowGeometry() {
+        setShowGeometry(!m_showGeometry);
+    }
+
+    void toggleShowScalarField() {
+        setShowScalarField(!m_showScalarField);
+    }
+
+    void setShowParticles(bool arg)
+    {
+        if (m_showParticles == arg)
+            return;
+
+        m_showParticles = arg;
+        emit showParticlesChanged(arg);
+    }
+
+    void setShowScalarField(bool arg)
+    {
+        if (m_showScalarField == arg)
+            return;
+
+        m_showScalarField = arg;
+        emit showScalarFieldChanged(arg);
+    }
 
 private slots:
     void finalizeStep();
@@ -89,10 +146,17 @@ signals:
     void previousStepCompletedChanged(bool arg);
     void requestStep();
 
+    void showGeometryChanged(bool arg);
+
+    void showParticlesChanged(bool arg);
+
+    void showScalarFieldChanged(bool arg);
+
 private slots:
     void handleWindowChanged(QQuickWindow *win);
 
 private:
+
     DSMCRenderer *m_renderer;
     Simulator m_dsmcSimulator;
     QVector3D m_systemSize;
@@ -113,4 +177,7 @@ private:
     friend class DSMCRenderer;
     void updatePositions();
     void updateScalarValues();
+    bool m_showGeometry;
+    bool m_showParticles;
+    bool m_showScalarField;
 };

@@ -40,7 +40,6 @@ void ScalarField::update(ScalarFieldContainer &scalarFieldContainer)
 {
     ensureInitialized();
     if(scalarFieldContainer.numPointsX == 0) return;
-    cout << "Actually updating, locally we have " << m_vertices.size() << " points." << endl;
     resize(scalarFieldContainer.numPointsX, scalarFieldContainer.numPointsY);
     vector<float> &values = scalarFieldContainer.values;
     for(unsigned int i=0; i<values.size(); i++) {
@@ -49,7 +48,7 @@ void ScalarField::update(ScalarFieldContainer &scalarFieldContainer)
         } else if(abs(values[i]-+VoxelType::Wall) < 1e-5) {
             m_vertices[i].color = QVector3D(1.0, 1.0, 1.0);
         } else {
-            m_vertices[i].color = QVector3D(0.1, 0.1, 0.1);
+            m_vertices[i].color = QVector3D(0.05, 0.05, 0.05);
         }
     }
 
@@ -58,7 +57,7 @@ void ScalarField::update(ScalarFieldContainer &scalarFieldContainer)
     m_funcs->glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(ScalarFieldData), &m_vertices[0], GL_STATIC_DRAW);
     if(m_indicesDirty) {
         m_funcs->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vboIds[1]);
-        m_funcs->glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(GLushort), &m_indices[0], GL_STATIC_DRAW);
+        m_funcs->glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(GLuint), &m_indices[0], GL_STATIC_DRAW);
         m_indicesDirty = false;
     }
 
@@ -140,15 +139,15 @@ void ScalarField::resize(unsigned int numPointsX, unsigned int numPointsY)
     m_vertices.resize(numPoints);
     m_indices.clear();
     m_indices.reserve(numIndices);
-    for(int i=0; i<numPointsX; i++) {
-        for(int j=0; j<numPointsY; j++) {
+    for(int i=0; i<int(numPointsX); i++) {
+        for(int j=0; j<int(numPointsY); j++) {
             float x = 2.0*(float(i) - 0.5*numPointsX)/(numPointsX-1);
             float y = 2.0*(float(j) - 0.5*numPointsY)/(numPointsY-1);
-            float z = 0;
+            float z = 0.1;
             unsigned int idx = index(i, j);
             m_vertices[idx].position = QVector3D(x,y,z);
 
-            if(i < numPointsX-1 && j < numPointsY-1) {
+            if(i < int(numPointsX)-1 && j < int(numPointsY)-1) {
                 unsigned int index1 = index(i+1,j);
                 unsigned int index2 = index(i,j+1);
                 unsigned int index3 = index(i,j);
